@@ -148,17 +148,17 @@
 
   <section id="Booking" class="container py-5">
     <h1 class="text-center">Book an Appointment</h1>
-    <form action="/submit-form" method="post" class="mt-4">
+    <form id="booking-form" action="/submit-form" method="POST">
       <div class="mb-3">
-        <label for="name" class="form-label">Full Name:</label>
-        <input type="text" id="name" name="name" class="form-control" required />
+        <label for="name">Full Name:</label><br/>
+        <input type="text" id="name" name="name"  required /><br/>
       </div>
       <div class="mb-3">
-        <label for="phone" class="form-label">Phone Number:</label>
-        <input type="tel" id="phone" name="phone" class="form-control" required />
+        <label for="phone">Phone Number:</label><br/>
+        <input type="tel" id="phone" name="phone"  required /><br/>
       </div>
       <div class="mb-3">
-        <label for="Service" class="form-label">Service:</label>
+        <label for="Service" >Service:</label><br/>
         <select id="Service" name="Service" class="form-control" required>
           <option value="APPLICATION">Application</option>
           <option value="MANICURE">Manicure</option>
@@ -173,15 +173,15 @@
         </select>
       </div>
       <div class="mb-3">
-        <label for="date" class="form-label">Preferred Date:</label>
-        <input type="date" id="date" name="date" class="form-control" required />
+        <label for="date" >Preferred Date:</label><br/>
+        <input type="date" id="date" name="date" class="form-control" required /><br/>
       </div>
       <div class="mb-3">
-        <label for="time" class="form-label">Preferred Time:</label>
-        <input type="time" id="time" name="time" class="form-control" required />
+        <label for="time" >Preferred Time:</label><br/>
+        <input type="time" id="time" name="time" class="form-control" required /><br/>
       </div>
       <div class="mb-3">
-        <label for="nailtech" class="form-label">Your Tech:</label>
+        <label for="nailtech" >Your Tech:</label><br/>
         <select id="nailtech" name="nailtech" class="form-control" required>
           <option value="iannails">Iannails - Trendynail's spot</option>
           <option value="nailedbymash">Nailed by Mash - Trendynail's spot</option>
@@ -192,6 +192,14 @@
           <option value="nailsaite">Nail's Aite - Trendynail's spot</option>
         </select>
       </div>
+      <div class="mb-3">
+        <label for="Location">Choose Location:</label><br/>
+        <select id="Location" name="Choose locatoin" class="form-control" required>
+          <option value="HH Tower">HH Tower -8th floor</option>
+          <option value="Around Afya Center">Around Afya Center</option>
+        </select>
+      </div>
+
       <button type="submit" class="btn btn-primary">Submit Booking</button>
     </form>
   </section>
@@ -201,8 +209,9 @@
     <h1>Contact Us</h1>
     <p>Moi Avenue, HH Tower, 8th Floor, Nairobi.</p>
     <p>Around Afya Center our 2nd location </p>
-    <p>Email: <a href="mailto:vallarymitchelle4@gmail.com">vallarymitchelle4@gmail.com</a></p>
-    <p>WhatsApp/Call: <a href="tel:+254793026339">+254793026339</a></p>
+    <p>WhatsApp/call|AROUND AFYA CENTER: <a href="tel:+254726738386">+254726738386</a></p>
+    <p>WhatsApp/Call|HH TOWERS: <a href="tel:+254796801811">+254796801811</a></p>
+    <p>WhatsApp/call|HH TOWERS : <a href="tel:+254792979705">+254792979705</a></p>
   </section>
 
 

@@ -1,36 +1,77 @@
 const express = require('express');
+const nodemailer = require('nodemailer');
 const bodyParser = require('body-parser');
 const cors = require('cors');
+const fs = require('fs');
 
 const app = express();
 const PORT = 3000;
 
+// Middleware
 app.use(cors());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
+app.use(express.static('public')); // Serve frontend files
 
-// Dummy storage for bookings
-let bookings = [];
-
-// POST endpoint to handle form submission
+// Booking endpoint
 app.post('/submit-form', (req, res) => {
-    const newBooking = req.body;
+  const booking = req.body;
 
-    // Prevent double booking for the same tech, date, and time
-    const conflict = bookings.find(b =>
-        b.tech === newBooking.tech &&
-        b.date === newBooking.date &&
-        b.time === newBooking.time
-    );
+  // 1. Save to local file
+  const bookingLine = JSON.stringify(booking) + '\n';
+  fs.appendFile('bookings.txt', bookingLine, err => {
+    if (err) {
+      console.error('Error saving booking:', err);
+      return res.status(500).send('Error saving booking');
+    }
+  });
 
-    if (conflict) {
-        return res.status(409).json({ message: 'This slot is already booked with that nail tech.' });
+  // 2. Choose email based on location
+  let recipientEmail = '';
+  if (booking.location === 'hh_towers') {
+    recipientEmail = 'mitchellevallary63@gmail.com'; // Replace with HH Towers email
+  } else if (booking.location === 'afya_centre') {
+    recipientEmail = 'vallarymitchelle4@gmail.com'; // Replace with Afya Centre email
+  } else {
+    return res.status(400).send('Invalid location selected.');
+  }
+
+  // 3. Send email notification
+  const transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+      user: 'vallarymitchelle257@gmail.com',
+      pass: 'efkgdnbubesrebox' // Use your Gmail app password
+    }
+  });
+
+  const mailOptions = {
+    from: booking.email || 'vallarymitchelle1@gmail.com',
+    to: recipientEmail,
+    subject: 'New Booking – Trendy_Nailsspot',
+    text: `
+New booking received:
+Name: ${booking.name}
+Phone: ${booking.phone}
+Service: ${booking.Service}
+Date: ${booking.date}
+Time: ${booking.time}
+Tech: ${booking.nailtech || 'Not selected'}
+Location: ${booking.location || 'Not selected'}
+    `
+  };
+
+  transporter.sendMail(mailOptions, (err, info) => {
+    if (err) {
+      console.error('Email error:', err);
+      return res.status(500).send('Booking saved, but email failed.');
     }
 
-    bookings.push(newBooking);
-    res.status(200).json({ message: 'Booking successful!' });
+    console.log('Email sent:', info.response);
+    res.status(200).send('Booking received and email sent!');
+  });
 });
 
 app.listen(PORT, () => {
-    console.log(`Server running on http://localhost:${PORT}`);
+  console.log(`Server is running at http://localhost:${PORT}`);
 });
