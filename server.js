@@ -5,7 +5,7 @@ const cors = require('cors');
 const fs = require('fs');
 
 const app = express();
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 
 // Middleware
 app.use(cors());
@@ -15,7 +15,7 @@ app.use(express.static('public')); // Serve frontend files
 
 // Booking endpoint
 app.post('/submit-form', (req, res) => {
-  const booking = req.body;
+  const  { name, phone, date, location, nailtech } = req.body;
 
   // 1. Save to local file
   const bookingLine = JSON.stringify(booking) + '\n';
@@ -73,5 +73,5 @@ Location: ${booking.location || 'Not selected'}
 });
 
 app.listen(PORT, () => {
-  console.log(`Server is running at http://localhost:${PORT}`);
-});
+  console.log(`Server running on port ${PORT}`);
+}); 
