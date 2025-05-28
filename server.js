@@ -13,9 +13,16 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use(express.static('public')); // Serve frontend files
 
+// Homepage route
+app.get('/', (req, res) => {
+  res.sendFile(__dirname + '/public/index.html');
+});
+
 // Booking endpoint
 app.post('/submit-form', (req, res) => {
-  const  { name, phone, date, location, nailtech } = req.body;
+  const { name, phone, date, time, location, nailtech } = req.body;
+
+  const booking = { name, phone, date, time, location, nailtech };
 
   // 1. Save to local file
   const bookingLine = JSON.stringify(booking) + '\n';
@@ -28,10 +35,10 @@ app.post('/submit-form', (req, res) => {
 
   // 2. Choose email based on location
   let recipientEmail = '';
-  if (booking.location === 'hh_towers') {
-    recipientEmail = 'mitchellevallary63@gmail.com'; // Replace with HH Towers email
-  } else if (booking.location === 'afya_centre') {
-    recipientEmail = 'vallarymitchelle4@gmail.com'; // Replace with Afya Centre email
+  if (location === 'hh_towers') {
+    recipientEmail = 'mitchellevallary63@gmail.com';
+  } else if (location === 'afya_centre') {
+    recipientEmail = 'vallarymitchelle4@gmail.com';
   } else {
     return res.status(400).send('Invalid location selected.');
   }
@@ -41,23 +48,22 @@ app.post('/submit-form', (req, res) => {
     service: 'gmail',
     auth: {
       user: 'vallarymitchelle257@gmail.com',
-      pass: 'efkgdnbubesrebox' // Use your Gmail app password
+      pass: 'efkgdnbubesrebox' // App password
     }
   });
 
   const mailOptions = {
-    from: booking.email || 'vallarymitchelle1@gmail.com',
+    from: 'vallarymitchelle1@gmail.com',
     to: recipientEmail,
     subject: 'New Booking – Trendy_Nailsspot',
     text: `
 New booking received:
-Name: ${booking.name}
-Phone: ${booking.phone}
-Service: ${booking.Service}
-Date: ${booking.date}
-Time: ${booking.time}
-Tech: ${booking.nailtech || 'Not selected'}
-Location: ${booking.location || 'Not selected'}
+Name: ${name}
+Phone: ${phone}
+Date: ${date}
+Time: ${time}
+Tech: ${nailtech || 'Not selected'}
+Location: ${location || 'Not selected'}
     `
   };
 
@@ -74,4 +80,4 @@ Location: ${booking.location || 'Not selected'}
 
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
-}); 
+});
