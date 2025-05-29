@@ -1,9 +1,11 @@
 // main.js
 
 document.addEventListener('DOMContentLoaded', () => {
-    const form = document.querySelector('form');
+    const form = document.getElementById('booking-form');
+    console.log("init")
 
     form.addEventListener('submit', async (e) => {
+        console.log("submit init")
         e.preventDefault();
 
         const formData = new FormData(form);
