@@ -71,7 +71,7 @@ Location: ${location || 'Not selected'}
   transporter.sendMail(mailOptions, (err, info) => {
     if (err) {
       console.error('Email error:', err);
-      return res.status(500).json({error:'Booking saved, but email failed.'});
+      return res.status(500).json({error: err});
     }
 
     console.log('Email sent:', info.response);
