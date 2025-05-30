@@ -3,6 +3,7 @@ const nodemailer = require('nodemailer');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const fs = require('fs');
+const { error } = require('console');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -29,7 +30,7 @@ app.post('/submit-form', (req, res) => {
   fs.appendFile('bookings.txt', bookingLine, err => {
     if (err) {
       console.error('Error saving booking:', err);
-      return res.status(500).json('Error saving booking');
+      return res.status(500).json({error:'Error saving booking'});
     }
   });
 
@@ -40,7 +41,7 @@ app.post('/submit-form', (req, res) => {
   } else if (location === 'afya_centre') {
     recipientEmail = 'vallarymitchelle4@gmail.com';
   } else {
-    return res.status(400).json('Invalid location selected.');
+    return res.status(400).json({error:'Invalid location selected.'});
   }
 
   // 3. Send email notification
@@ -70,11 +71,11 @@ Location: ${location || 'Not selected'}
   transporter.sendMail(mailOptions, (err, info) => {
     if (err) {
       console.error('Email error:', err);
-      return res.status(500).json('Booking saved, but email failed.');
+      return res.status(500).json({error:'Booking saved, but email failed.'});
     }
 
     console.log('Email sent:', info.response);
-    res.status(200).json('Booking received and email sent!');
+    res.status(200).json({message:'Booking received and email sent!'});
   });
 });
 
