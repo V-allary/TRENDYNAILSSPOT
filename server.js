@@ -49,7 +49,7 @@ app.post('/submit-form', (req, res) => {
     service: 'gmail',
     auth: {
       user: 'vallarymitchelle257@gmail.com',
-      pass: 'efkgdnbubesrebox' // App password
+      pass: process.env.PTSO // App password
     }
   });
 
