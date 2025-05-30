@@ -38,7 +38,7 @@ app.post('/submit-form', (req, res) => {
   let recipientEmail = '';
   if (location === 'hh_towers') {
     recipientEmail = 'mitchellevallary63@gmail.com';
-  } else if (location === 'afya_centre') {
+  } else if (location === 'afya_center') {
     recipientEmail = 'vallarymitchelle4@gmail.com';
   } else {
     return res.status(400).json({error:'Invalid location selected.'});

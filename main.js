@@ -15,6 +15,8 @@ document.addEventListener('DOMContentLoaded', () => {
             data[key] = value;
         });
 
+        console.log(data)
+
         try {
             const response = await fetch('/submit-form', {
                 method: 'POST',
