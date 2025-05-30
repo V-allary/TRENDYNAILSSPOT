@@ -54,7 +54,7 @@ app.post('/submit-form', (req, res) => {
   });
 
   const mailOptions = {
-    from: 'vallarymitchelle1@gmail.com',
+    from: 'vallarymitchelle257@gmail.com',
     to: recipientEmail,
     subject: 'New Booking – Trendy_Nailsspot',
     text: `
