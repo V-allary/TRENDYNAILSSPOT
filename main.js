@@ -2,8 +2,10 @@
 
 document.addEventListener('DOMContentLoaded', () => {
     const form = document.querySelector('form');
+    console.log("init zero")
 
     form.addEventListener('submit', async (e) => {
+        console.log("init submit")
         e.preventDefault();
 
         const formData = new FormData(form);
@@ -12,6 +14,8 @@ document.addEventListener('DOMContentLoaded', () => {
         formData.forEach((value, key) => {
             data[key] = value;
         });
+
+        console.log(data)
 
         try {
             const response = await fetch('/submit-form', {
