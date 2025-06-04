@@ -3,10 +3,30 @@ const nodemailer = require('nodemailer');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const fs = require('fs');
+const mongoose = require('mongoose');
 const { error } = require('console');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+
+// MongoDb connection
+mongoose.connect('mongodb+srv://trendy_nailsspot:<LrLDBootFIXy0zGq@cluster0.ae8ywlg.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0',{
+  useNewUrlPaser: true,
+  useUnifiedTopology: true,
+}); then(() => console.log('MongoDB connected'))
+    .catch(err => console.error(' MongoDB error:', err));
+
+const bookingSchema = new monogoose.Schema({
+  name: String,
+  phone: String,
+  date: String,
+  time: String,
+  location:String,
+  nailtech: String,
+});
+
+const Booking = mongoose.model('Booking', bookingSchema);
+  
 
 // Middleware
 app.use(cors());
@@ -19,11 +39,26 @@ app.get('/', (req, res) => {
   res.sendFile(__dirname + '/index.html');
 });
 
-// Booking endpoint
-app.post('/submit-form', (req, res) => {
+// Booking route
+app.post('/submit-form', async (req, res) => {
   const { name, phone, date, time, location, nailtech } = req.body;
 
   const booking = { name, phone, date, time, location, nailtech };
+
+//validate location
+if(!['hh_tower', 'afya_center']. includes (location)) {
+  return res.status(400).json({ error: 'Invalid location selected.'});
+}
+//prevent double booking
+const existingBooking =await Booking.findOne({date,time,nailtech});
+if (existingBooking) {
+  return res.status(400).json({
+    error: 'This nailtech is already is already booked on ${date} at ${time}. Plese choose a diffrent time.'});
+}
+
+ //save to MongoDB
+const newBooking = new Booking({name,phone,date,time,location,nailtech});
+await newBooking.save();
 
   // 1. Save to local file
   const bookingLine = JSON.stringify(booking) + '\n';
