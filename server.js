@@ -9,8 +9,10 @@ const { error } = require('console');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+const mdso = process.env.MDSO ;
+
 // MongoDb connection
-mongoose.connect('mongodb+srv://trendy_nailsspot:LrLDBootFIXy0zGq@cluster0.ae8ywlg.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0', {
+mongoose.connect('mongodb+srv://trendy_nailsspot:mdso@cluster0.ae8ywlg.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0', {
   useNewUrlParser: true,
   useUnifiedTopology: true,
 })
@@ -50,13 +52,14 @@ app.post('/submit-form', async (req, res) => {
 if (!['hh_towers', 'afya_center'].includes(location)) {
   return res.status(400).json({ error: 'Invalid location selected.' });
 }
-//prevent double booking
-const existingBooking =await Booking.findOne({date,time,nailtech});
+// Prevent double booking
+const existingBooking = await Booking.findOne({ date, time, nailtech });
 if (existingBooking) {
   return res.status(400).json({
     error: `This nailtech is already booked on ${date} at ${time}. Please choose a different time.`,
   });
 }
+
 
  //save to MongoDB
 const newBooking = new Booking({name,phone,date,time,location,nailtech});
