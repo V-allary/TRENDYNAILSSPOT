@@ -32,7 +32,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 alert(result.message);
                 form.reset();
             } else {
-                alert(result.message);
+                alert(result.error);
             }
         } catch (error) {
             alert('Something went wrong! Please try again later.');
