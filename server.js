@@ -54,7 +54,7 @@ if (!['hh_towers', 'afya_center'].includes(location)) {
 }
 // Prevent double booking
 const existingBooking = await Booking.findOne({ date, time, nailtech });
-if (existingBooking) {
+if (existingBooking != undefined) {
   return res.status(400).json({
     error: `This nailtech is already booked on ${date} at ${time}. Please choose a different time.`,
   });
