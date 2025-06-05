@@ -10,13 +10,14 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 // MongoDb connection
-mongoose.connect('mongodb+srv://trendy_nailsspot:<LrLDBootFIXy0zGq@cluster0.ae8ywlg.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0',{
-  useNewUrlPaser: true,
+mongoose.connect('mongodb+srv://trendy_nailsspot:LrLDBootFIXy0zGq@cluster0.ae8ywlg.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0', {
+  useNewUrlParser: true,
   useUnifiedTopology: true,
-}); then(() => console.log('MongoDB connected'))
-    .catch(err => console.error(' MongoDB error:', err));
+})
+.then(() => console.log('MongoDB connected'))
+.catch(err => console.error('MongoDB error:', err));
 
-const bookingSchema = new monogoose.Schema({
+const bookingSchema = new mongoose.Schema({
   name: String,
   phone: String,
   date: String,
@@ -46,14 +47,15 @@ app.post('/submit-form', async (req, res) => {
   const booking = { name, phone, date, time, location, nailtech };
 
 //validate location
-if(!['hh_tower', 'afya_center']. includes (location)) {
-  return res.status(400).json({ error: 'Invalid location selected.'});
+if (!['hh_towers', 'afya_center'].includes(location)) {
+  return res.status(400).json({ error: 'Invalid location selected.' });
 }
 //prevent double booking
 const existingBooking =await Booking.findOne({date,time,nailtech});
 if (existingBooking) {
   return res.status(400).json({
-    error: 'This nailtech is already is already booked on ${date} at ${time}. Plese choose a diffrent time.'});
+    error: `This nailtech is already booked on ${date} at ${time}. Please choose a different time.`,
+  });
 }
 
  //save to MongoDB
