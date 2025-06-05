@@ -1,15 +1,27 @@
 {
   "name": "trendynailsspot",
   "version": "1.0.0",
+  "description": "Booking system backend for Trendy Nailsspot",
   "main": "server.js",
+  "type": "commonjs",
   "scripts": {
-    "start": "node server.js"
+    "start": "node server.js",
+    "dev": "nodemon server.js"
   },
   "dependencies": {
-    "body-parser": "^2.2.0",
+    "body-parser": "^1.20.2",
     "cors": "^2.8.5",
-    "express": "^5.1.0",
+    "express": "^4.19.2",
     "mongoose": "^8.15.1",
-    "nodemailer": "^7.0.3"
-  }
+    "nodemailer": "^6.9.8"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "keywords": [],
+  "author": "Vallary Mitchelle",
+  "license": "ISC"
 }

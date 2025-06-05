@@ -161,6 +161,7 @@
       <div class="mb-3">
         <label for="Service" >Service:</label><br/>
         <select id="Service" name="Service" class="form-control" required>
+          <option value=""disabled selected>Choose Service</option>
           <option value="APPLICATION">Application</option>
           <option value="MANICURE">Manicure</option>
           <option value="PEDICURE">Pedicure</option>
@@ -178,22 +179,24 @@
         <input type="date" id="date" name="date" class="form-control" required /><br/>
       </div>
       <div class="mb-3">
-        <label for="time" >Preferred Time:</label><br/>
-        <section id="time" name="time" class="form-control" required>
-          <option value="08:00">08:00 AM</option>
-          <option value="10:00">10:00 AM</option>
-          <option value="12:00">12:00 PM</option>
+        <label for="time" > Time:</label><br/>
+        <select id="time" name="time" class="form-control" required>
+          <option value="'"disabled selected>Preferred Time</option>
+          <option value="08:00">08:00AM</option>
+          <option value="10:00">10:00AM</option>
+          <option value="12:00">12:00PM</option>
           <option value="14:00">2:00 PM</option>
           <option value="16:00">4:00 PM</option>
           <option value="18:00">6:00 PM</option>
           <option value="19:00">7:00 PM</option>
           <option value="20:00">8:00 PM</option>
           <option value="21:00">9:00 PM</option>
-        </section>
+        </select>
       </div>
       <div class="mb-3">
         <label for="nailtech" >Your Tech:</label><br/>
         <select id="nailtech" name="nailtech" class="form-control" required>
+          <option value="" disabled selected>Preferred Tech</option>
           <option value="nailedbymash">NailedbyMash - Trendynail's spot</option>
           <option value="nailsbymanesh">NailsdbyManesh - Trendynail's spot</option>
           <option value="rickyclaws">Ricky_klaws - Trendynail's spot</option>
