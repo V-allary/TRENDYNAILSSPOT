@@ -12,7 +12,7 @@ const PORT = process.env.PORT || 3000;
 const mdso = process.env.MDSO ;
 
 // MongoDb connection
-mongoose.connect('mongodb+srv://trendy_nailsspot:mdso@cluster0.ae8ywlg.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0', {
+mongoose.connect('mongodb+srv://trendy_nailsspot:' + mdso + '@cluster0.ae8ywlg.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0', {
   useNewUrlParser: true,
   useUnifiedTopology: true,
 })
