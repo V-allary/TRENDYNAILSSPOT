@@ -9,8 +9,10 @@ const { error } = require('console');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+const mdso = process.env.MDSO ;
+
 // MongoDb connection
-mongoose.connect('mongodb+srv://trendy_nailsspot:LrLDBootFIXy0zGq@cluster0.ae8ywlg.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0', {
+mongoose.connect('mongodb+srv://trendy_nailsspot:' + mdso + '@cluster0.ae8ywlg.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0', {
   useNewUrlParser: true,
   useUnifiedTopology: true,
 })
@@ -50,13 +52,14 @@ app.post('/submit-form', async (req, res) => {
 if (!['hh_towers', 'afya_center'].includes(location)) {
   return res.status(400).json({ error: 'Invalid location selected.' });
 }
-//prevent double booking
-const existingBooking =await Booking.findOne({date,time,nailtech});
-if (existingBooking) {
+// Prevent double booking
+const existingBooking = await Booking.findOne({ date, time, nailtech });
+if (existingBooking != undefined) {
   return res.status(400).json({
     error: `This nailtech is already booked on ${date} at ${time}. Please choose a different time.`,
   });
 }
+
 
  //save to MongoDB
 const newBooking = new Booking({name,phone,date,time,location,nailtech});
@@ -76,7 +79,7 @@ await newBooking.save();
   if (location === 'hh_towers') {
     recipientEmail = 'mitchellevallary63@gmail.com';
   } else if (location === 'afya_center') {
-    recipientEmail = 'vallarymitchelle4@gmail.com';
+    recipientEmail = 'josephmacharia286@gmail.com';
   } else {
     return res.status(400).json({error:'Invalid location selected.'});
   }
@@ -85,7 +88,7 @@ await newBooking.save();
   const transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
-      user: 'vallarymitchelle257@gmail.com',
+      user: 'josephmacharia286@gmail.com',
       pass: process.env.PTSO // App password
     }
   });
