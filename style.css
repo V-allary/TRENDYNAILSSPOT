@@ -48,35 +48,23 @@ body {
     color: #888;
     margin-top: 40px;
   }
-  
-  .gallery-row {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
+  .image-row {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
     gap: 20px;
     margin-top: 30px;
+    padding: 0 20px;
   }
   
-  .gallery-row img {
-    width: 250px;
+  .image-row img {
+    width: 100%;
     height: auto;
     border-radius: 10px;
     object-fit: cover;
-    box-shadow: 0 4px 8px rgba(0,0,0,0,.1);
-    transition: transform 0.3s ease-in-out;
-    border: 2px solid #eee;
-  }
-
-  .gallery-row img hover {
-    transform: scale(1.05);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   }
   
-  .gallery-heading {
-    text-align: center;
-    font-family: 'Playfair Display', serif;
-    margin-top: 40px;
-    font-size: 28px;
-  }
+  
   form input, form select, form button {
     width: 100%;
     max-width: 400px;
