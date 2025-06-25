@@ -26,6 +26,7 @@ const bookingSchema = new mongoose.Schema({
   time: String,
   location:String,
   nailtech: String,
+  service: String,
 });
 
 const Booking = mongoose.model('Booking', bookingSchema);
@@ -44,9 +45,9 @@ app.get('/', (req, res) => {
 
 // Booking route
 app.post('/submit-form', async (req, res) => {
-  const { name, phone, date, time, location, nailtech } = req.body;
+  const { name, phone, date, time, location, nailtech, service } = req.body.service;
 
-  const booking = { name, phone, date, time, location, nailtech };
+  const booking = { name, phone, date, time, location, nailtech ,service};
 
 //validate location
 if (!['hh_towers', 'afya_center'].includes(location)) {
@@ -62,7 +63,7 @@ if (existingBooking != undefined) {
 
 
  //save to MongoDB
-const newBooking = new Booking({name,phone,date,time,location,nailtech});
+const newBooking = new Booking({name,phone,date,time,location,nailtech,service});
 await newBooking.save();
 
   // 1. Save to local file
@@ -104,6 +105,7 @@ Phone: ${phone}
 Date: ${date}
 Time: ${time}
 Tech: ${nailtech || 'Not selected'}
+service:${service}
 Location: ${location || 'Not selected'}
     `
   };
