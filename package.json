@@ -9,11 +9,13 @@
     "dev": "nodemon server.js"
   },
   "dependencies": {
+    "africastalking": "^0.7.3",
     "body-parser": "^1.20.2",
     "cors": "^2.8.5",
     "express": "^4.19.2",
     "mongoose": "^8.15.1",
-    "nodemailer": "^6.9.8"
+    "node-schedule": "^2.1.1",
+    "nodemailer": "^6.10.1"
   },
   "devDependencies": {
     "nodemon": "^3.1.0"
