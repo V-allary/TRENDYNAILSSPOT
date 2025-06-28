@@ -1,12 +1,12 @@
 // reminder.js
 require('dotenv').config();
 const mongoose = require('mongoose');
-const africastalking = require('africastalking')({
+const africastalking0 = require('africastalking')({
   apiKey: process.env.AT_API_KEY,
   username: 'TrendyNailsspot', // ✅ Fixed: Should be a string
-});
+}, { debug: true});
 
-const sms = africastalking.SMS;
+const sms = africastalking0.SMS;
 const Booking = require('./models/Booking');
 
 const mdso = process.env.MDSO ;
@@ -35,14 +35,11 @@ async function sendReminders() {
 
     for (const booking of bookings) {
       const message0 = ` Hello ${booking.name}, this is a friendly reminder that your appointment at TrendyNailsspot is today at ${booking.time}. See you soon!`;
-      console.log(message0)
       const address0 = `${booking.phone}`
-      console.log(address0 + "Q") 
       const options = {
         to: [address0],
         message: message0
       }
-      console.log(options)
       try {
         await sms.send(options)
         .then( response => {
