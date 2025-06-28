@@ -37,7 +37,7 @@ async function sendReminders() {
       const message0 = ` Hello ${booking.name}, this is a friendly reminder that your appointment at TrendyNailsspot is today at ${booking.time}. See you soon!`;
       const address0 = `${booking.phone}`
       const options = {
-        from: 'TrendyNailsspot' ,
+        //from:'TrendyNailsspot' ,
         enqueue: false ,
         to: [address0],
         message: message0
