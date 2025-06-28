@@ -26,7 +26,7 @@ async function sendReminders() {
     const currentDate = twoHoursLater.toISOString().split('T')[0];
     const currentTime = twoHoursLater.toTimeString().slice(0, 5);
 
-    const bookings = await Booking.find({ date: currentDate, time: currentTime });
+    const bookings = await Booking.find({ date: currentDate });
 
     if (!bookings.length) {
       console.log('No reminders to send right now.');
