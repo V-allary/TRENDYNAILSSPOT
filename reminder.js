@@ -38,7 +38,7 @@ async function sendReminders() {
       const address0 = `${booking.phone}`
       const options = {
         //from:'TrendyNailsspot' ,
-        enqueue: false ,
+        enqueue: true ,
         to: [address0],
         message: message0
       }
