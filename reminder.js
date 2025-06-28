@@ -35,18 +35,17 @@ async function sendReminders() {
 
     for (const booking of bookings) {
       const message0 = ` Hello ${booking.name}, this is a friendly reminder that your appointment at TrendyNailsspot is today at ${booking.time}. See you soon!`;
-
+      console.log(message0)
       const address0 = `${booking.phone}`
-      
+      console.log(address0 + "Q") 
       const options = {
-
+        to: [address0],
+        message: message0
       }
-
+      console.log(options)
       try {
-        await sms.send({
-          to: [address0],
-          message: message0
-        }).then( response => {
+        await sms.send(options)
+        .then( response => {
             console.log(response);
         })
         .catch( error => {
