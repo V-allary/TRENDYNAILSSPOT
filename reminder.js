@@ -40,6 +40,11 @@ async function sendReminders() {
         await sms.send({
           to: [booking.phone],
           message
+        }).then( response => {
+            console.log(response);
+        })
+        .catch( error => {
+            console.log(error);
         });
       } catch(e) {
         console.log(e)
