@@ -18,6 +18,14 @@ mongoose.connect('mongodb+srv://trendy_nailsspot:' + mdso + '@cluster0.ae8ywlg.m
   .then(() => console.log('MongoDB connected for reminders'))
   .catch(err => console.error('MongoDB connection error:', err));
 
+  const formatPhoneNumber = (phone) => {
+    if (phone.startsWith('0')) {
+      return '+254' + phone.slice(1);
+    }
+    return phone;
+  };
+  
+
 async function sendReminders() {
   try {
     const now = new Date();
