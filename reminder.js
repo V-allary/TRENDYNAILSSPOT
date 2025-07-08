@@ -1,12 +1,12 @@
 // reminder.js
 require('dotenv').config();
 const mongoose = require('mongoose');
-const africastalking = require('africastalking')({
+const africastalking0 = require('africastalking')({
   apiKey: process.env.AT_API_KEY,
   username: 'TrendyNailsspot', // ✅ Fixed: Should be a string
-});
+}, { debug: true});
 
-const sms = africastalking.SMS;
+const sms = africastalking0.SMS;
 const Booking = require('./models/Booking');
 
 const mdso = process.env.MDSO ;
@@ -18,6 +18,14 @@ mongoose.connect('mongodb+srv://trendy_nailsspot:' + mdso + '@cluster0.ae8ywlg.m
   .then(() => console.log('MongoDB connected for reminders'))
   .catch(err => console.error('MongoDB connection error:', err));
 
+  const formatPhoneNumber = (phone) => {
+    if (phone.startsWith('0')) {
+      return '+254' + phone.slice(1);
+    }
+    return phone;
+  };
+  
+
 async function sendReminders() {
   try {
     const now = new Date();
@@ -26,7 +34,7 @@ async function sendReminders() {
     const currentDate = twoHoursLater.toISOString().split('T')[0];
     const currentTime = twoHoursLater.toTimeString().slice(0, 5);
 
-    const bookings = await Booking.find({ date: currentDate, time: currentTime });
+    const bookings = await Booking.find({ date: currentDate });
 
     if (!bookings.length) {
       console.log('No reminders to send right now.');
@@ -34,14 +42,28 @@ async function sendReminders() {
     }
 
     for (const booking of bookings) {
-      const message = `💅🏽 Hello ${booking.name}, this is a friendly reminder that your appointment at TrendyNailsspot is today at ${booking.time}. See you soon!`;
+      const message0 = ` Hello ${booking.name}, this is a friendly reminder that your appointment at TrendyNailsspot is today at ${booking.time}. See you soon!`;
+      const address0 = `${booking.phone}`
+      const options = {
+        //from:'TrendyNailsspot' ,
+        enqueue: true ,
+        to: [address0],
+        message: message0
+      }
+      try {
+        await sms.send(options)
+        .then( response => {
+            console.log(response);
+        })
+        .catch( error => {
+            console.log(error);
+        });
+      } catch(e) {
+        console.log(e)
+      }
 
-      await sms.send({
-        to: [booking.phone],
-        message
-      });
 
-      console.log(`Reminder sent to ${booking.name} at ${booking.phone}`);
+      console.log(`Reminder attempted to be sent to ${booking.name} at ${booking.phone}`);
     }
 
   } catch (error) {
