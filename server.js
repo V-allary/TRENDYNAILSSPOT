@@ -47,7 +47,7 @@ app.get('/', (req, res) => {
 app.post('/submit-form', async (req, res) => {
   const { name, phone, date, time, location, nailtech, service } = req.body;
 
-  const booking = { name, phone, date, time, location, nailtech ,service};
+  const booking = { name, phone, date, time, location, nailtech ,service: Array.isArray(service)?service.join(', ') : service};
 
 //validate location
 if (!['hh_towers', 'afya_center'].includes(location)) {
@@ -105,7 +105,7 @@ Phone: ${phone}
 Date: ${date}
 Time: ${time}
 Tech: ${nailtech || 'Not selected'}
-service:${service}
+service: ${Array.isArray(service) ? service.join(', ') : service}
 Location: ${location || 'Not selected'}
     `
   };
@@ -113,7 +113,7 @@ Location: ${location || 'Not selected'}
   transporter.sendMail(mailOptions, (err, info) => {
     if (err) {
       console.error('Email error:', err);
-      return res.status(500).json({error: err});
+      return res.status(500).json({ error: err.message || String(err) });
     }
 
     console.log('Email sent:', info.response);
