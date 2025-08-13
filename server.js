@@ -47,8 +47,7 @@ app.get('/', (req, res) => {
 app.post('/submit-form', async (req, res) => {
   const { name, phone, date, time, location, nailtech, service } = req.body;
 
-  const booking = { name, phone, date, time, location, nailtech ,service ,};
-
+  
 //validate location
 if (!['hh_towers', 'afya_center'].includes(location)) {
   return res.status(400).json({ error: 'Invalid location selected.' });
@@ -80,7 +79,7 @@ await newBooking.save();
   if (location === 'hh_towers') {
     recipientEmail = 'vallarymitchelle4@gmail.com';
   } else if (location === 'afya_center') {
-    recipientEmail = 'josephmacharia286@gmail.com';
+    recipientEmail = 'vallarymitchelle257@gmail.com';
   } else {
     return res.status(400).json({error:'Invalid location selected.'});
   }
