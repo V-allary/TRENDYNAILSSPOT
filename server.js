@@ -40,7 +40,7 @@ app.use(express.static(__dirname)); // Serve frontend files
 
 // Homepage route
 app.get('/', (req, res) => {
-  res.sendFile(__dirname + 'public/index.html');
+  res.sendFile(__dirname + '/index.html');
 });
 
 // Booking route
