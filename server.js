@@ -40,25 +40,26 @@ app.use(express.static(__dirname)); // Serve frontend files
 
 // Homepage route
 app.get('/', (req, res) => {
-  res.sendFile(__dirname + '/index.html');
+  res.sendFile(__dirname + 'public/index.html');
 });
 
 // Booking route
 app.post('/submit-form', async (req, res) => {
-  const { name, phone, date, time, location, nailtech, service } = req.body;
+  try {
+    const { name, phone, date, time, location, nailtech, service } = req.body;
 
-  
-//validate location
-if (!['hh_towers', 'afya_center'].includes(location)) {
-  return res.status(400).json({ error: 'Invalid location selected.' });
-}
-// Prevent double booking
-const existingBooking = await Booking.findOne({ date, time, nailtech });
-if (existingBooking != undefined) {
-  return res.status(400).json({
-    error: `This nailtech is already booked on ${date} at ${time}. Please choose a different time.`,
-  });
-}
+    // Validate location
+    if (!['hh_towers', 'afya_center'].includes(location)) {
+      return res.status(400).json({ error: 'Invalid location selected.' });
+    }
+
+    // Prevent double booking
+    const existingBooking = await Booking.findOne({ date, time, nailtech });
+    if (existingBooking) {
+      return res.status(400).json({
+        error: `This nailtech is already booked on ${date} at ${time}. Please choose a different time.`,
+      });
+    }
 
 
  //save to MongoDB
@@ -66,13 +67,10 @@ const newBooking = new Booking({name,phone,date,time,location,nailtech,service})
 await newBooking.save();
 
   // 1. Save to local file
-  const bookingLine = JSON.stringify(booking) + '\n';
-  fs.appendFile('bookings.txt', bookingLine, err => {
-    if (err) {
-      console.error('Error saving booking:', err);
-      return res.status(500).json({error:'Error saving booking'});
-    }
-  });
+   const bookingLine = JSON.stringify(newBooking) + '\n';
+       fs.appendFile('bookings.txt', bookingLine, err => {
+         if (err) console.error('Error saving booking locally:', err);
+       });
 
   // 2. Choose email based on location
   let recipientEmail = '';
@@ -112,14 +110,18 @@ Location: ${location || 'Not selected'}
   transporter.sendMail(mailOptions, (err, info) => {
     if (err) {
       console.error('Email error:', err);
-      return res.status(500).json({ error: err.message || String(err) });
+      return res.status(500).json({ error: 'Failed to send email.' });
     }
-
-    console.log('Email sent:', info.response);
-    res.status(200).json({message:'Booking received and email sent!'});
+    console.log('📧 Email sent:', info.response);
+    res.status(200).json({ message: 'Booking received and email sent!' });
   });
+
+} catch (err) {
+  console.error('Server error:', err);
+  res.status(500).json({ error: 'Something went wrong.' });
+}
 });
 
 app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
+console.log(`Server running on port ${PORT}`);
 });
