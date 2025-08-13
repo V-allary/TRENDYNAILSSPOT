@@ -45,9 +45,10 @@ app.get('/', (req, res) => {
 
 // Booking route
 app.post('/submit-form', async (req, res) => {
-  const { name, phone, date, time, location, nailtech, service } = req.body;
+  const { name, phone, date, time, location, nailtech, service, } = req.body;
 
-  const booking = { name, phone, date, time, location, nailtech ,service};
+  const servicesList = Array.isArray(service) ? service.join(', ') : service;
+  const booking = { name, phone, date, time, location, nailtech, service: servicesList };
 
 //validate location
 if (!['hh_towers', 'afya_center'].includes(location)) {
@@ -63,7 +64,7 @@ if (existingBooking != undefined) {
 
 
  //save to MongoDB
-const newBooking = new Booking({name,phone,date,time,location,nailtech,service});
+const newBooking = new Booking({name,phone,date,time,location,nailtech,service: servicesList});
 await newBooking.save();
 
   // 1. Save to local file
@@ -105,7 +106,7 @@ Phone: ${phone}
 Date: ${date}
 Time: ${time}
 Tech: ${nailtech || 'Not selected'}
-service:${service}
+service:${servicesList}
 Location: ${location || 'Not selected'}
     `
   };
