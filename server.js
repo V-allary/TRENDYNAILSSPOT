@@ -47,7 +47,7 @@ app.get('/', (req, res) => {
 app.post('/submit-form', async (req, res) => {
   const { name, phone, date, time, location, nailtech, service } = req.body;
 
-  const booking = { name, phone, date, time, location, nailtech ,service: Array.isArray(service)?service.join(', ') : service};
+  const booking = { name, phone, date, time, location, nailtech ,service ,};
 
 //validate location
 if (!['hh_towers', 'afya_center'].includes(location)) {
@@ -78,7 +78,7 @@ await newBooking.save();
   // 2. Choose email based on location
   let recipientEmail = '';
   if (location === 'hh_towers') {
-    recipientEmail = 'trendynailspothhtowers@gmail.com';
+    recipientEmail = 'vallarymitchelle4@gmail.com';
   } else if (location === 'afya_center') {
     recipientEmail = 'josephmacharia286@gmail.com';
   } else {
@@ -105,23 +105,22 @@ Phone: ${phone}
 Date: ${date}
 Time: ${time}
 Tech: ${nailtech || 'Not selected'}
-service: ${Array.isArray(service) ? service.join(', ') : service}
+service: ${service}
 Location: ${location || 'Not selected'}
     `
   };
 
-  transporter.sendMail(mailOptions,(err,info) => {
+  transporter.sendMail(mailOptions, (err, info) => {
     if (err) {
       console.error('Email error:', err);
-      return res.status(500).json({error: err});
-    } 
+      return res.status(500).json({ error: err.message || String(err) });
+    }
 
     console.log('Email sent:', info.response);
-    res.status(200).json({ message:'Message sent successfully and email sent!'});
+    res.status(200).json({message:'Booking received and email sent!'});
   });
 });
 
-// Start server
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
