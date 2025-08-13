@@ -110,19 +110,18 @@ Location: ${location || 'Not selected'}
     `
   };
 
-  try {
-    await transporter.sendMail(mailOptions);
-    res.status(200).json({ message: 'Booking sent to Trendy Nailsspot!' });
-  } catch (emailError) {
-    console.error('Email sending error:', emailError);
-    // Still tell the user it's fine
-    res.status(200).json({ message: 'Booking sent to Trendy Nailsspot!' });
-  }
+  transporter.sendMail(mailOptions,(err,info) => {
+    if (err) {
+      console.error('Email error:', err);
+      return res.status(500).json({error: err});
+    } 
 
     console.log('Email sent:', info.response);
-    res.status(200).json({message:'Booking received and email sent!'});
+    res.status(200).json({ message:'Message sent successfully and email sent!'});
   });
+});
 
+// Start server
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
