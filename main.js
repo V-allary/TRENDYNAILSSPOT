@@ -2,10 +2,10 @@
 
 document.addEventListener('DOMContentLoaded', () => {
     const form = document.querySelector('form');
-    console.log("init zero")
+    console.log("init zero");
 
     form.addEventListener('submit', async (e) => {
-        console.log("init submit")
+        console.log("init submit");
         e.preventDefault();
 
         const formData = new FormData(form);
@@ -15,7 +15,7 @@ document.addEventListener('DOMContentLoaded', () => {
             data[key] = value;
         });
 
-        console.log(data)
+        console.log(data);
 
         try {
             const response = await fetch('/submit-form', {
@@ -27,12 +27,15 @@ document.addEventListener('DOMContentLoaded', () => {
             });
 
             const result = await response.json();
-            console.log(result)
+            console.log(result);
+
             if (response.ok) {
-                alert(result.message);
+                //  backend sends { message: "Booking successful" }
+                alert(result.message || JSON.stringify(result));
                 form.reset();
             } else {
-                alert(result.error);
+                // backend sends { error: "Something went wrong" }
+                alert(result.error || JSON.stringify(result));
             }
         } catch (error) {
             alert('Something went wrong! Please try again later.');
