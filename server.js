@@ -47,8 +47,7 @@ app.get('/', (req, res) => {
 app.post('/submit-form', async (req, res) => {
   const { name, phone, date, time, location, nailtech, service } = req.body;
 
-  const servicesList = Array.isArray(service) ? service.join(', ') : service;
-  const booking = { name, phone, date, time, location, nailtech, service: servicesList };
+  const booking = { name, phone, date, time, location, nailtech ,service};
 
 //validate location
 if (!['hh_towers', 'afya_center'].includes(location)) {
@@ -64,7 +63,7 @@ if (existingBooking != undefined) {
 
 
  //save to MongoDB
-const newBooking = new Booking({name,phone,date,time,location,nailtech,service: serviceList});
+const newBooking = new Booking({name,phone,date,time,location,nailtech,service});
 await newBooking.save();
 
   // 1. Save to local file
@@ -81,7 +80,7 @@ await newBooking.save();
   if (location === 'hh_towers') {
     recipientEmail = 'trendynailspothhtowers@gmail.com';
   } else if (location === 'afya_center') {
-    recipientEmail = 'josephmacharia@gmail.com';
+    recipientEmail = 'josephmacharia286@gmail.com';
   } else {
     return res.status(400).json({error:'Invalid location selected.'});
   }
@@ -106,7 +105,7 @@ Phone: ${phone}
 Date: ${date}
 Time: ${time}
 Tech: ${nailtech || 'Not selected'}
-service:${serviceList}
+service:${service}
 Location: ${location || 'Not selected'}
     `
   };
