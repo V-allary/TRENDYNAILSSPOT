@@ -45,7 +45,7 @@ app.get('/', (req, res) => {
 
 // Booking route
 app.post('/submit-form', async (req, res) => {
-  const { name, phone, date, time, location, nailtech, service, } = req.body;
+  const { name, phone, date, time, location, nailtech, service } = req.body;
 
   const servicesList = Array.isArray(service) ? service.join(', ') : service;
   const booking = { name, phone, date, time, location, nailtech, service: servicesList };
