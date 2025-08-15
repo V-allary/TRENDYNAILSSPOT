@@ -64,7 +64,7 @@ if (existingBooking != undefined) {
 
 
  //save to MongoDB
-const newBooking = new Booking({name,phone,date,time,location,nailtech,service: service});
+const newBooking = new Booking({name,phone,date,time,location,nailtech,service: serviceList});
 await newBooking.save();
 
   // 1. Save to local file
@@ -81,7 +81,7 @@ await newBooking.save();
   if (location === 'hh_towers') {
     recipientEmail = 'trendynailspothhtowers@gmail.com';
   } else if (location === 'afya_center') {
-    recipientEmail = 'josephmacharia286@gmail.com';
+    recipientEmail = 'josephmacharia@gmail.com';
   } else {
     return res.status(400).json({error:'Invalid location selected.'});
   }
@@ -106,7 +106,7 @@ Phone: ${phone}
 Date: ${date}
 Time: ${time}
 Tech: ${nailtech || 'Not selected'}
-service:${service}
+service:${serviceList}
 Location: ${location || 'Not selected'}
     `
   };
