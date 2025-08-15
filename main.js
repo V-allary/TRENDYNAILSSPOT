@@ -1,53 +1,41 @@
 // main.js
 
-document.addEventListener('DOMContentLoaded', () => {
-    const form = document.querySelector('form');
-    console.log("init zero");
+document.addEventListener('DOMContentLoaded', function () {
+    const form = document.getElementById('bookingForm');
 
     form.addEventListener('submit', async (e) => {
-        console.log("init submit");
         e.preventDefault();
 
-        const formData = new FormData(form);
-        const data = {};
+        const selectedServices = Array.from(document.getElementById('service').selectedOptions)
+                                      .map(option => option.value);
 
-        formData.forEach((value, key) => {
-            if (key.endsWith('[]')) { // Handle multiple select array
-                const arrayKey = key.slice(0, -2);
-                if (!data[arrayKey]) {
-                    data[arrayKey] = [];
-                }
-                data[arrayKey].push(value);
-            } else {
-                data[key] = value;
-            }
-        });
-
-        console.log(data);
+        const bookingData = {
+            name: form.name.value,
+            phone: form.phone.value,
+            date: form.date.value,
+            time: form.time.value,
+            location: form.location.value,
+            nailtech: form.nailtech.value,
+            service: selectedServices // Send array to backend
+        };
 
         try {
             const response = await fetch('/submit-form', {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(data)
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(bookingData)
             });
 
             const result = await response.json();
-            console.log(result);
+            alert(result.message || result.error);
 
             if (response.ok) {
-                //  backend sends { message: "Booking successful" }
-                alert(result.message || JSON.stringify(result));
                 form.reset();
-            } else {
-                // backend sends { error: "Something went wrong" }
-                alert(result.error || JSON.stringify(result));
             }
-        } catch (error) {
-            alert('Something went wrong! Please try again later.');
-            console.error(error);
+
+        } catch (err) {
+            console.error('Error:', err);
+            alert('Error sending booking.');
         }
     });
 });

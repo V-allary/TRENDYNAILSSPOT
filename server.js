@@ -106,7 +106,7 @@ Phone: ${phone}
 Date: ${date}
 Time: ${time}
 Tech: ${nailtech || 'Not selected'}
-service:${servicesListForEmail}
+service:${servicesList}
 Location: ${location || 'Not selected'}
     `
   };
