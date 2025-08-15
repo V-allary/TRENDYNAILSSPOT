@@ -81,7 +81,7 @@ await newBooking.save();
   if (location === 'hh_towers') {
     recipientEmail = 'trendynailspothhtowers@gmail.com';
   } else if (location === 'afya_center') {
-    recipientEmail = 'vallarymitchelle257@gmail.com';
+    recipientEmail = 'josephmacharia286@gmail.com';
   } else {
     return res.status(400).json({error:'Invalid location selected.'});
   }
