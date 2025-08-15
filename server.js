@@ -79,7 +79,7 @@ await newBooking.save();
   // 2. Choose email based on location
   let recipientEmail = '';
   if (location === 'hh_towers') {
-    recipientEmail = 'vallarymitchelle4@gmail.com';
+    recipientEmail = 'trendynailspothhtowers@gmail.com';
   } else if (location === 'afya_center') {
     recipientEmail = 'vallarymitchelle257@gmail.com';
   } else {
