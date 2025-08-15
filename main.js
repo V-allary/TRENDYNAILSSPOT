@@ -12,7 +12,15 @@ document.addEventListener('DOMContentLoaded', () => {
         const data = {};
 
         formData.forEach((value, key) => {
-            data[key] = value;
+            if (key.endsWith('[]')) { // Handle multiple select array
+                const arrayKey = key.slice(0, -2);
+                if (!data[arrayKey]) {
+                    data[arrayKey] = [];
+                }
+                data[arrayKey].push(value);
+            } else {
+                data[key] = value;
+            }
         });
 
         console.log(data);
