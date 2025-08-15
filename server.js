@@ -64,7 +64,7 @@ if (existingBooking != undefined) {
 
 
  //save to MongoDB
-const newBooking = new Booking({name,phone,date,time,location,nailtech,service: servicesList});
+const newBooking = new Booking({name,phone,date,time,location,nailtech,service: service});
 await newBooking.save();
 
   // 1. Save to local file
@@ -106,7 +106,7 @@ Phone: ${phone}
 Date: ${date}
 Time: ${time}
 Tech: ${nailtech || 'Not selected'}
-service:${servicesList}
+service:${service}
 Location: ${location || 'Not selected'}
     `
   };
