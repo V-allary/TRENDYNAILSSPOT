@@ -80,7 +80,7 @@ await newBooking.save();
   if (location === 'hh_towers') {
     recipientEmail = 'trendynailspothhtowers@gmail.com';
   } else if (location === 'afya_center') {
-    recipientEmail = 'josephmacharia286@gmail.com';
+    recipientEmail = 'vallarymitchelle1@gmail.com';
   } else {
     return res.status(400).json({error:'Invalid location selected.'});
   }
@@ -89,7 +89,7 @@ await newBooking.save();
   const transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
-      user: 'josephmacharia286@gmail.com',
+      user: 'vallarymitchelle1@gmail.com',
       pass: process.env.PTSO // App password
     }
   });
