@@ -44,10 +44,18 @@ app.get('/', (req, res) => {
 });
 
 // Booking route
-app.post('/submit-form', async (req, res) => {
-  const { name, phone, date, time, location, nailtech, service } = req.body;
+app.post('/submit-form',async (req, res) => {
+  let { name, phone, email, services, date, time, location, nailtech, message } = req.body;
 
-  const booking = { name, phone, date, time, location, nailtech ,service};
+  // ✅ Fix for multiple checkbox selections
+  if (Array.isArray(services)) {
+      services = services.join(', ');
+  } else if (typeof services === 'string') {
+      // Single selection
+      services = services;
+  } else {
+      services = ''; // if nothing selected
+  }
 
 //validate location
 if (!['hh_towers', 'afya_center'].includes(location)) {
