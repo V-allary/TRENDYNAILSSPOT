@@ -44,18 +44,10 @@ app.get('/', (req, res) => {
 });
 
 // Booking route
-app.post('/submit-form',async (req, res) => {
-  let { name, phone, email, services, date, time, location, nailtech, message } = req.body;
+app.post('/submit-form', async (req, res) => {
+  const { name, phone, date, time, location, nailtech, service } = req.body;
 
-  // ✅ Fix for multiple checkbox selections
-  if (Array.isArray(services)) {
-      services = services.join(', ');
-  } else if (typeof services === 'string') {
-      // Single selection
-      services = services;
-  } else {
-      services = ''; // if nothing selected
-  }
+  const booking = { name, phone, date, time, location, nailtech ,service};
 
 //validate location
 if (!['hh_towers', 'afya_center'].includes(location)) {
@@ -88,7 +80,7 @@ await newBooking.save();
   if (location === 'hh_towers') {
     recipientEmail = 'trendynailspothhtowers@gmail.com';
   } else if (location === 'afya_center') {
-    recipientEmail = 'vallarymitchelle1@gmail.com';
+    recipientEmail = 'josephmacharia286@gmail.com';
   } else {
     return res.status(400).json({error:'Invalid location selected.'});
   }
