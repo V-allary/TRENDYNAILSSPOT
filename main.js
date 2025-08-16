@@ -20,11 +20,10 @@ document.addEventListener('DOMContentLoaded', function () {
         };
 
         try {
-            const response = await fetch('/submit-form', {
+            const response = await fetch('https://trendynailsspot.onrender.com/submit-form', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(bookingData)
-            });
+                body: formData
+            })
 
             const result = await response.json();
             alert(result.message || result.error);
