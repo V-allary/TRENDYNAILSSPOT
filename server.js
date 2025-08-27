@@ -126,7 +126,7 @@ Location: ${location || 'Not selected'}
         return res.status(500).json({ error: 'Failed to send email' });
       }
 
-      console.log('📩 Email sent:', info.response);
+      console.log(' Email sent:', info.response);
       res.status(200).json({ message: 'Booking received and email sent!' });
     });
 
