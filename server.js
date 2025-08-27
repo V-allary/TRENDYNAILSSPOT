@@ -89,7 +89,7 @@ await newBooking.save();
   const transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
-      user: ' josephmacharia286@gmail.com',
+      user: ' trendynailspothhtowers@gmail.com',
       pass: process.env.PTSO // App password
     }
   });
