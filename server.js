@@ -95,7 +95,7 @@ await newBooking.save();
   });
 
   const mailOptions = {
-    from: 'vallarymitchelle257@gmail.com',
+    from: 'josephmacharia286@gmail.com',
     to: recipientEmail,
     subject: 'New Booking – Trendy_Nailsspot',
     text: `
