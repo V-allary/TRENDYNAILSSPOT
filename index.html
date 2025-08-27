@@ -191,30 +191,27 @@
       </div>
        
       <div class="mb-3">
-        <label for="service" >Service:</label><br/>
-        <select id="service" name="service" class="form-control" required>
-          <option value=""disabled selected>Choose Service</option>
-          <optgroup label="APPLICATION">
-            <option value="Gel">Gel-ksh700</option>
-            <option value="mattegel">Matte Gel-ksh800</option>
-            <option value="french">French-ksh900</option>
+        <label for="service" class="form-label">Choose Services:</label>
+        <select id="service" name="service[]" class="selectpicker form-control" multiple data-live-search="true" title="Preferred Service(s)">
+          <optgroup label="Application">
+            <option value="Gel">Gel - Ksh700</option>
+            <option value="Matte Gel">Matte Gel - Ksh800</option>
+            <option value="French Gel">French Gel - Ksh900</option>
             <option value="Gelomber">Gel Omber-ksh1,000</option>
           </optgroup>
-          
-          <optgroup label="MANICURE">
-            <option value="plainsins">Plain Ins-ksh500</option>
+          <optgroup label="Manicure">
+            <option value="Plain Ins">Plain Ins - Ksh500</option>
             <option value="Gents">Gents-ksh500</option>
-            <option value="regularins">Regular Ins-ksh1,000</option>
-          </optgroup>
+            <option value="Regular Ins">Regular Ins - Ksh1000</option>
     
-          <optgroup label="PEDICURE">
-            <option value="Normalplain">Normal Plain-ksh800</option>
+          </optgroup>
+          <optgroup label="Pedicure">
+            <option value="Normal Plain - Ksh800">Normal Plain - Ksh800</option>
             <option value="regularp.g">Regular P.g-ksh1,500</option>
             <option value="Gents">Gents-ksh1,000</option>
             <option value="signature">Signature-ksh2,000</option>
             <option value="jelly">Jelly-ksh2,500</option>
           </optgroup>
-    
           <optgroup label="OVERLAY">
             <option value="naturalbuilder">Natural Builder-ksh1,500</option>
             <option value="tip+overlay">Tip+Overlay-ksh2,000</option>
@@ -261,8 +258,6 @@
     
         </select>
       </div>
-    
-    
       <div class="mb-3">
         <label for="date" >Preferred Date:</label><br/>
         <input type="date" id="date" name="date" class="form-control" required /><br/>

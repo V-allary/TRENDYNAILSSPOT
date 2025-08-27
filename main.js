@@ -1,40 +1,53 @@
 // main.js
 
-document.addEventListener('DOMContentLoaded', function () {
-    const form = document.getElementById('bookingForm');
+document.addEventListener('DOMContentLoaded', () => {
+    const form = document.querySelector('form');
+    console.log("init zero");
 
     form.addEventListener('submit', async (e) => {
+        console.log("init submit");
         e.preventDefault();
 
-        const selectedServices = Array.from(document.getElementById('service').selectedOptions)
-                                      .map(option => option.value);
+        const formData = new FormData(form);
+        const data = {};
 
-        const bookingData = {
-            name: form.name.value,
-            phone: form.phone.value,
-            date: form.date.value,
-            time: form.time.value,
-            location: form.location.value,
-            nailtech: form.nailtech.value,
-            service: selectedServices // Send array to backend
-        };
+        formData.forEach((value, key) => {
+            if (key.endsWith('[]')) { // Handle multiple select array
+                const arrayKey = key.slice(0, -2);
+                if (!data[arrayKey]) {
+                    data[arrayKey] = [];
+                }
+                data[arrayKey].push(value);
+            } else {
+                data[key] = value;
+            }
+        });
+
+        console.log(data);
 
         try {
-            const response = await fetch('https://trendynailsspot.onrender.com/submit-form', {
+            const response = await fetch('/submit-form', {
                 method: 'POST',
-                body: formData
-            })
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            });
 
             const result = await response.json();
-            alert(result.message || result.error);
+            console.log(result);
 
             if (response.ok) {
+                //  backend sends { message: "Booking successful" }
+                alert(result.message || JSON.stringify(result));
                 form.reset();
+            } else {
+                // backend sends { error: "Something went wrong" }
+                alert(result.error || JSON.stringify(result));
             }
-
-        } catch (err) {
-            console.error('Error:', err);
-            alert('Error sending booking.');
+        } catch (error) {
+            alert('Something went wrong! Please try again later.');
+            console.error(error);
         }
     });
 });
