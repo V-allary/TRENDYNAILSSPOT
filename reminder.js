@@ -1,9 +1,9 @@
- // reminder.js
+// reminder.js
 require('dotenv').config();
 const mongoose = require('mongoose');
 const africastalking0 = require('africastalking')({
   apiKey: process.env.AT_API_KEY,
-  username: 'TrendyNailsspot', // ✅ Fixed: Should be a string
+  username: 'TrendyNailsspot', //  A string
 }, { debug: true});
 
 const sms = africastalking0.SMS;
@@ -29,10 +29,10 @@ mongoose.connect('mongodb+srv://trendy_nailsspot:' + mdso + '@cluster0.ae8ywlg.m
 async function sendReminders() {
   try {
     const now = new Date();
-    const twoHoursLater = new Date(now.getTime() + 1  * 60 * 1000);
+    const oneMinuteLater = new Date(now.getTime() + 1  * 60 * 1000);
 
-    const currentDate = twoHoursLater.toISOString().split('T')[0];
-    const currentTime = twoHoursLater.toTimeString().slice(0, 5);
+    const currentDate = oneMinuteLater.toISOString().split('T')[0];
+    const currentTime = oneMinuteLater.toTimeString().slice(0, 5);
 
     const bookings = await Booking.find();
     console.log("All bookings in DB:", bookings);
