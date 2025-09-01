@@ -1,7 +1,17 @@
-// main.js
+ // main.js
 
 document.addEventListener('DOMContentLoaded', () => {
     const form = document.querySelector('form');
+    const phoneInput = document.querySelector("#phone");
+
+    // ✅ Initialize intl-tel-input in professional mode (Option 1)
+    const iti = window.intlTelInput(phoneInput, {
+        initialCountry: "ke",   // Default Kenya
+        separateDialCode: false, // No inline dial code
+        nationalMode: false,    // Always full format (+254...)
+        utilsScript: "https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.19/js/utils.js"
+    });
+
     console.log("init zero");
 
     form.addEventListener('submit', async (e) => {
@@ -23,6 +33,9 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
 
+        // formatted international number
+        data.phone = iti.getNumber();
+
         console.log(data);
 
         try {
@@ -38,11 +51,10 @@ document.addEventListener('DOMContentLoaded', () => {
             console.log(result);
 
             if (response.ok) {
-                //  backend sends { message: "Booking successful" }
                 alert(result.message || JSON.stringify(result));
                 form.reset();
+                iti.setCountry("ke"); // reset back to Kenya
             } else {
-                // backend sends { error: "Something went wrong" }
                 alert(result.error || JSON.stringify(result));
             }
         } catch (error) {
