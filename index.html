@@ -186,10 +186,10 @@
         <input type="text" id="name" name="name"  required /><br/>
       </div>
       <div class="mb-3">
-        <label for="phone">Phone Number:</label><br/>
-        <input type="tel" id="phone" name="phone"  required /><br/>
-      </div>
-       
+          <label class="form-label">Phone</label>
+          <input id="phone" type="tel" class="form-control" placeholder="+254 7xx xxx xxx" required>
+          <div class="invalid-feedback">Phone is required.</div>
+        </div>
       <div class="mb-3">
         <label for="service" class="form-label">Choose Services:</label>
         <select id="service" name="service[]" class="selectpicker form-control" multiple data-live-search="true" title="Preferred Service(s)">
