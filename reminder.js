@@ -1,4 +1,4 @@
-// reminder.js
+ // reminder.js
 require('dotenv').config();
 const mongoose = require('mongoose');
 const africastalking0 = require('africastalking')({
@@ -29,7 +29,7 @@ mongoose.connect('mongodb+srv://trendy_nailsspot:' + mdso + '@cluster0.ae8ywlg.m
 async function sendReminders() {
   try {
     const now = new Date();
-    const twoHoursLater = new Date(now.getTime() + 2 * 60 * 60 * 1000);
+    const twoHoursLater = new Date(now.getTime() + 1  * 60 * 1000);
 
     const currentDate = twoHoursLater.toISOString().split('T')[0];
     const currentTime = twoHoursLater.toTimeString().slice(0, 5);
