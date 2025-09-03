@@ -1,106 +1,114 @@
- // reminder.js
+// reminder.js
 require('dotenv').config();
-
-// Force Node to use Nairobi time
 process.env.TZ = 'Africa/Nairobi';
 
 const mongoose = require('mongoose');
 const africastalking = require('africastalking')({
   apiKey: process.env.AT_API_KEY,
-  username: 'TrendyNailsspot',
+  username: process.env.AT_USERNAME || 'TrendyNailsspot',
 });
 const sms = africastalking.SMS;
 const Booking = require('./models/Booking');
 
-const mdso = process.env.MDSO;
+const MONGO_PWD = process.env.MDSO;
 
-// === CONFIG ===
-const TEST_MODE = true; // set false for real 2hr reminders
+// ---------- CONFIG ----------
+const TEST_MODE = true;                // true: easier manual testing
+const WINDOW_MINUTES = TEST_MODE ? 5 : 120; // 5 min for tests, 2h in prod
 
-// === Helpers ===
-const pad2 = (n) => String(n).padStart(2, '0');
+// ---------- Utils ----------
+const pad2 = n => String(n).padStart(2, '0');
+const todayStr = (d = new Date()) => `${d.getFullYear()}-${pad2(d.getMonth()+1)}-${pad2(d.getDate())}`;
+const timeToMinutes = t => {
+  if (!/^([01]\d|2[0-3]):[0-5]\d$/.test(String(t))) return null;
+  const [h,m] = t.split(':').map(Number);
+  return h*60+m;
+};
 
-function getNairobiDateString(d = new Date()) {
-  return `${d.getFullYear()}-${pad2(d.getMonth() + 1)}-${pad2(d.getDate())}`;
-}
-
-// "HH:MM" -> minutes since midnight
-function timeToMinutes(t) {
-  if (!t) return null;
-  const [h, m] = t.split(':').map(Number);
-  if (Number.isNaN(h) || Number.isNaN(m)) return null;
-  return h * 60 + m;
-}
-
-// Sanitize phone to +2547XXXXXXXX
-function formatPhoneNumber(phone) {
+function formatPhoneE164KEN(phone) {
   if (!phone) return null;
-  let cleaned = String(phone).trim().replace(/\s+/g, '').replace(/-/g, '');
-
-  if (cleaned.startsWith('+2547')) return cleaned;
-  if (cleaned.startsWith('07') && cleaned.length === 10) return '+254' + cleaned.slice(1);
-  if (cleaned.startsWith('7') && cleaned.length === 9) return '+254' + cleaned;
-  if (cleaned.startsWith('2547')) return '+' + cleaned;
-
+  let s = String(phone).trim().replace(/[()\s-]+/g, '');
+  if (/^\+2547\d{8}$/.test(s)) return s;
+  if (/^07\d{8}$/.test(s))     return '+254' + s.slice(1);
+  if (/^7\d{8}$/.test(s))      return '+254' + s;
+  if (/^2547\d{8}$/.test(s))   return '+' + s;
   return null;
 }
 
-// === DB ===
+// ---------- DB ----------
 mongoose.connect(
-  `mongodb+srv://trendy_nailsspot:${mdso}@cluster0.ae8ywlg.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`
+  `mongodb+srv://trendy_nailsspot:${MONGO_PWD}@cluster0.ae8ywlg.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`
 ).then(() => console.log('MongoDB connected for reminders'))
- .catch(err => console.error('MongoDB connection error:', err));
+ .catch(err => { console.error('MongoDB connection error:', err); process.exit(1); });
 
-// === Main ===
-async function sendReminders() {
+// ---------- Main ----------
+async function run() {
   try {
     const now = new Date();
-    const today = getNairobiDateString(now);
-    const nowMinutes = now.getHours() * 60 + now.getMinutes();
-    const windowMinutes = TEST_MODE ? 1 : 120;
-    const cutoffMinutes = nowMinutes + windowMinutes;
+    const today = todayStr(now);
+    const nowMin = now.getHours()*60 + now.getMinutes();
+    const endMin = nowMin + WINDOW_MINUTES;
 
-    console.log(TEST_MODE ? 'TEST MODE: 1-minute window' : '⏱ REAL MODE: 2-hour window');
-    console.log(`Nairobi now: ${today} ${pad2(now.getHours())}:${pad2(now.getMinutes())}`);
-    console.log(`Window: [${nowMinutes} .. ${cutoffMinutes}] minutes since midnight`);
+    console.log(TEST_MODE ? ' TEST MODE' : '⏱ PROD MODE');
+    console.log(` Nairobi now: ${today} ${pad2(now.getHours())}:${pad2(now.getMinutes())}`);
+    console.log(`Window (mins since midnight): [${nowMin} .. ${endMin}]`);
 
-    // Get all today's bookings regardless of date format
-    const bookings = await Booking.find({
-      date: { $in: [today, today.replace(/-/g, '/')] }
-    }).lean();
+    // match both '-' and '/' just in case legacy data exists
+    const todayAlt = today.replace(/-/g, '/');
+    const todays = await Booking.find({ date: { $in: [today, todayAlt] } }).lean();
+    console.log(`Found ${todays.length} booking(s) for today.`);
 
-    console.log(`Found ${bookings.length} booking(s) for today.`);
-    if (!bookings.length) {
-      console.log(" No bookings match today's date. Dumping all DB entries for debug:");
-      const all = await Booking.find().lean();
-      console.log(all);
+    if (!todays.length) {
+      console.log(' No bookings for today.');
+      return;
     }
 
-    for (const b of bookings) {
-      const mins = timeToMinutes(b.time);
-      if (mins == null) {
-        console.log(`Skipping ${b.name} — invalid time: ${b.time}`);
-        continue;
-      }
-      if (mins < nowMinutes || mins > cutoffMinutes) {
-        console.log(`Skipping ${b.name} (${b.time}) — not within window`);
-        continue;
-      }
+    let candidates;
+    if (TEST_MODE) {
+      // Pick the most recent booking
+      const latest = [...todays].sort((a, b) => {
+        if (a.createdAt && b.createdAt) {
+          return new Date(b.createdAt) - new Date(a.createdAt);
+        }
+        // fallback: compare by time field if no createdAt
+        return (timeToMinutes(b.time) || 0) - (timeToMinutes(a.time) || 0);
+      })[0];
 
-      const phone = formatPhoneNumber(b.phone);
+      candidates = latest ? [latest] : [];
+      console.log('TEST: forcing latest booking only:', {
+        name: latest?.name,
+        time: latest?.time,
+        phone: latest?.phone,
+        createdAt: latest?.createdAt,
+      });
+    } else {
+      candidates = todays.filter(b => {
+        const mins = timeToMinutes(b.time);
+        return mins !== null && mins >= nowMin && mins <= endMin;
+      });
+    }
+
+    if (!candidates.length) {
+      console.log('No bookings within the reminder window.');
+      return;
+    }
+
+    for (const b of candidates) {
+      const phone = formatPhoneE164KEN(b.phone);
       if (!phone) {
-        console.log(`Skipping ${b.name} — invalid phone: ${b.phone}`);
+        console.log(` Skip ${b.name}: invalid phone "${b.phone}"`);
         continue;
       }
 
-      const message = `Hello ${b.name}, this is a friendly reminder that your appointment at TrendyNailsspot is today at ${b.time}. See you soon!`;
+      const message =
+        `Hello ${b.name}, this is a reminder that your appointment at TrendyNailsspot is today at ${b.time}. See you soon!`;
 
+      console.log(`➡ Sending to ${b.name} ${phone} @ ${b.time}`);
       try {
         const resp = await sms.send({ to: [phone], message, enqueue: true });
-        console.log(`Sent to ${b.name} (${phone}) — ${b.time}`);
-        console.log(resp);
+        console.log(' Africa’sTalking response:', resp);
       } catch (err) {
-        console.error(` Failed to send to ${b.name} (${phone}) — ${b.time}`, err);
+        console.error('SMS send error:', err);
       }
     }
   } catch (e) {
@@ -110,4 +118,4 @@ async function sendReminders() {
   }
 }
 
-sendReminders();
+run();
