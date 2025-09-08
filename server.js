@@ -4,8 +4,7 @@ const bodyParser = require('body-parser');
 const cors = require('cors');
 const fs = require('fs');
 const mongoose = require('mongoose');
-const twilio = require('twilio');
-
+const africastalking = require('africastalking');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -15,13 +14,10 @@ const mdso = process.env.MDSO; // MongoDB password from .env
 // ================== MongoDB Connection ==================
 mongoose.connect(
   'mongodb+srv://trendy_nailsspot:' + mdso + '@cluster0.ae8ywlg.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0',
-  {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-  }
+  { useNewUrlParser: true, useUnifiedTopology: true }
 )
 .then(() => console.log(' MongoDB connected'))
-.catch(err => console.error('MongoDB error:', err));
+.catch(err => console.error(' MongoDB error:', err));
 
 // ================== Schema ==================
 const bookingSchema = new mongoose.Schema({
@@ -31,7 +27,7 @@ const bookingSchema = new mongoose.Schema({
   time: String,
   location: String,
   nailtech: String,
-  service: [String], // <-- Allow multiple services
+  service: [String],
 });
 
 const Booking = mongoose.model('Booking', bookingSchema);
@@ -40,53 +36,52 @@ const Booking = mongoose.model('Booking', bookingSchema);
 app.use(cors());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
-app.use(express.static(__dirname)); // Serve frontend files
+app.use(express.static(__dirname));
 
+// ================== Africa’s Talking Setup ==================
+const at = africastalking({
+  apiKey: process.env.AT_API_KEY,  // from your Sandbox account
+  username: 'sandbox'              // must be "sandbox" for testing
+});
+const sms = at.SMS;
 
-//Twilio client setup
-const client = twilio(
-  process.env.TWILIO_ACCOUNT_SID,
-  process.env.TWILIO_AUTH_TOKEN
-);
+// ================== Test Route ==================
 app.get('/test-sms', async (req, res) => {
   try {
-    const message = await client.messages.create({
-      body: "Hello Vallary!  This is a test reminder from your Twilio trial account ",
-      from: process.env.TWILIO_PHONE_NUMBER,
-      to: "+254743747840"  // <-- your verified number
+    const result = await sms.send({
+      to: ['+254793026339'],  // your phone in E.164 format
+      message: 'Hello Vallary ! This is a test SMS from Africa’s Talking Sandbox.',
+      from: 'sandbox'         // fixed for sandbox testing
     });
-    res.send("SMS sent successfully! SID: " + message.sid);
+    console.log('SMS sent:', result);
+    res.json(result);
   } catch (err) {
-    console.error("Error sending SMS:", err);
-    res.status(500).send("Error sending SMS");
+    console.error(' SMS error:', err);
+    res.status(500).json({ error: 'Failed to send SMS' });
   }
 });
 
 // ================== Routes ==================
 
-
 // Homepage
 app.get('/', (req, res) => {
   res.sendFile(__dirname + '/index.html');
 });
- 
- // Booking route
+
+// Booking route
 app.post('/submit-form', async (req, res) => {
   try {
     let { name, phone, date, time, location, nailtech, service } = req.body;
 
-    // Ensure service is always an array
-    if (!Array.isArray(service)) {
-      service = [service];
-    }
+    if (!Array.isArray(service)) service = [service];
 
     // --- Clean & format phone number ---
     if (phone) {
       phone = phone.trim();
-      if (phone.startsWith("0")) {
-        phone = "+254" + phone.substring(1); // Convert 07... -> +2547...
-      } else if (!phone.startsWith("+")) {
-        phone = "+254" + phone; // Assume Kenya if no +
+      if (phone.startsWith('0')) {
+        phone = '+254' + phone.substring(1);
+      } else if (!phone.startsWith('+')) {
+        phone = '+254' + phone;
       }
     }
 
@@ -97,11 +92,11 @@ app.post('/submit-form', async (req, res) => {
       return res.status(400).json({ error: 'Invalid location selected.' });
     }
 
-    // Prevent double booking for the same nailtech at the same time
+    // Prevent double booking
     const existingBooking = await Booking.findOne({ date, time, nailtech });
     if (existingBooking) {
       return res.status(400).json({
-        error: `This nailtech is already booked on ${date} at ${time}. Please choose a different time.`,
+        error: `This nailtech is already booked on ${date} at ${time}. Please choose another time.`,
       });
     }
 
@@ -109,20 +104,20 @@ app.post('/submit-form', async (req, res) => {
     const newBooking = new Booking(booking);
     await newBooking.save();
 
-    // --- Send SMS confirmation via Twilio ---
+    // --- Send SMS confirmation via Africa’s Talking ---
     try {
-      if (phone && phone.startsWith("+")) {
-        await client.messages.create({
-          body: `Hi ${name}, your booking on ${date} at ${time} with Trendy Nailsspot is confirmed. See you soon!`,
-          from: process.env.TWILIO_PHONE_NUMBER,  
-          to: phone,
+      if (phone && phone.startsWith('+')) {
+        await sms.send({
+          to: [phone],
+          message: `Hi ${name}, your booking on ${date} at ${time} with Trendy Nailsspot is confirmed. See you soon!`,
+          from: 'sandbox'
         });
-        console.log("SMS sent to:", phone);
+        console.log('SMS sent to:', phone);
       } else {
-        console.log(" Skipped SMS, invalid phone:", phone);
+        console.log('Skipped SMS, invalid phone:', phone);
       }
     } catch (smsError) {
-      console.error(" Twilio SMS error:", smsError);
+      console.error(' AT SMS error:', smsError);
     }
 
     // Save to local file (backup)
@@ -130,22 +125,20 @@ app.post('/submit-form', async (req, res) => {
       if (err) console.error('Error saving booking to file:', err);
     });
 
-    // Choose recipient email based on location
+    // Email setup
     let recipientEmail =
       location === 'hh_towers'
         ? 'trendynailspothhtowers@gmail.com'
         : 'josephmacharia286@gmail.com';
 
-    // Email transporter
     const transporter = nodemailer.createTransport({
       service: 'gmail',
       auth: {
         user: 'trendynailspothhtowers@gmail.com',
-        pass: process.env.PTSO, // Gmail app password
+        pass: process.env.PTSO,
       },
     });
 
-    // Email content
     const mailOptions = {
       from: 'trendynailspothhtowers@gmail.com',
       to: recipientEmail,
@@ -163,14 +156,13 @@ Location: ${location || 'Not selected'}
       `,
     };
 
-    // Send email
     transporter.sendMail(mailOptions, (err, info) => {
       if (err) {
-        console.error('Email error:', err);
+        console.error(' Email error:', err);
         return res.status(500).json({ error: 'Failed to send email' });
       }
 
-      console.log(' Email sent:', info.response);
+      console.log('📧 Email sent:', info.response);
       res.status(200).json({ message: 'Booking received, email & SMS sent!' });
     });
 
@@ -182,5 +174,5 @@ Location: ${location || 'Not selected'}
 
 // ================== Start Server ==================
 app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
+  console.log(`🚀 Server running on port ${PORT}`);
 });
