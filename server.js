@@ -4,123 +4,162 @@ const bodyParser = require('body-parser');
 const cors = require('cors');
 const fs = require('fs');
 const mongoose = require('mongoose');
-const { error } = require('console');
+const twilio = require('twilio');
+
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-const mdso = process.env.MDSO ;
+const mdso = process.env.MDSO; // MongoDB password from .env
 
-// MongoDb connection
-mongoose.connect('mongodb+srv://trendy_nailsspot:' + mdso + '@cluster0.ae8ywlg.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0', {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-})
-.then(() => console.log('MongoDB connected'))
+// ================== MongoDB Connection ==================
+mongoose.connect(
+  'mongodb+srv://trendy_nailsspot:' + mdso + '@cluster0.ae8ywlg.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0',
+  {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  }
+)
+.then(() => console.log(' MongoDB connected'))
 .catch(err => console.error('MongoDB error:', err));
 
+// ================== Schema ==================
 const bookingSchema = new mongoose.Schema({
   name: String,
   phone: String,
   date: String,
   time: String,
-  location:String,
+  location: String,
   nailtech: String,
-  service: String,
+  service: [String], // <-- Allow multiple services
 });
 
 const Booking = mongoose.model('Booking', bookingSchema);
-  
 
-// Middleware
+// ================== Middleware ==================
 app.use(cors());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use(express.static(__dirname)); // Serve frontend files
 
-// Homepage route
+
+//Twilio client setup
+const client = twilio(
+  process.env.TWILIO_ACCOUNT_SID,
+  process.env.TWILIO_AUTH_TOKEN
+);
+app.get('/test-sms', async (req, res) => {
+  try {
+    const message = await client.messages.create({
+      body: "Hello Vallary!  This is a test reminder from your Twilio trial account ",
+      from: process.env.TWILIO_PHONE_NUMBER,
+      to: "+254743747840"  // <-- your verified number
+    });
+    res.send("SMS sent successfully! SID: " + message.sid);
+  } catch (err) {
+    console.error("Error sending SMS:", err);
+    res.status(500).send("Error sending SMS");
+  }
+});
+
+// ================== Routes ==================
+
+
+// Homepage
 app.get('/', (req, res) => {
   res.sendFile(__dirname + '/index.html');
 });
 
 // Booking route
 app.post('/submit-form', async (req, res) => {
-  const { name, phone, date, time, location, nailtech, service } = req.body;
+  try {
+    let { name, phone, date, time, location, nailtech, service } = req.body;
 
-  const booking = { name, phone, date, time, location, nailtech ,service};
-
-//validate location
-if (!['hh_towers', 'afya_center'].includes(location)) {
-  return res.status(400).json({ error: 'Invalid location selected.' });
-}
-// Prevent double booking
-const existingBooking = await Booking.findOne({ date, time, nailtech });
-if (existingBooking != undefined) {
-  return res.status(400).json({
-    error: `This nailtech is already booked on ${date} at ${time}. Please choose a different time.`,
-  });
-}
-
-
- //save to MongoDB
-const newBooking = new Booking({name,phone,date,time,location,nailtech,service});
-await newBooking.save();
-
-  // 1. Save to local file
-  const bookingLine = JSON.stringify(booking) + '\n';
-  fs.appendFile('bookings.txt', bookingLine, err => {
-    if (err) {
-      console.error('Error saving booking:', err);
-      return res.status(500).json({error:'Error saving booking'});
+    // Ensure service is always an array
+    if (!Array.isArray(service)) {
+      service = [service];
     }
-  });
 
-  // 2. Choose email based on location
-  let recipientEmail = '';
-  if (location === 'hh_towers') {
-    recipientEmail = 'trendynailspothhtowers@gmail.com';
-  } else if (location === 'afya_center') {
-    recipientEmail = 'josephmacharia286@gmail.com';
-  } else {
-    return res.status(400).json({error:'Invalid location selected.'});
-  }
+    const booking = { name, phone, date, time, location, nailtech, service };
 
-  // 3. Send email notification
-  const transporter = nodemailer.createTransport({
-    service: 'gmail',
-    auth: {
-      user: 'josephmacharia286@gmail.com',
-      pass: process.env.PTSO // App password
+    // Validate location
+    if (!['hh_towers', 'afya_center'].includes(location)) {
+      return res.status(400).json({ error: 'Invalid location selected.' });
     }
-  });
 
-  const mailOptions = {
-    from: 'vallarymitchelle257@gmail.com',
-    to: recipientEmail,
-    subject: 'New Booking – Trendy_Nailsspot',
-    text: `
+    // Prevent double booking for the same nailtech at the same time
+    const existingBooking = await Booking.findOne({ date, time, nailtech });
+    if (existingBooking) {
+      return res.status(400).json({
+        error: `This nailtech is already booked on ${date} at ${time}. Please choose a different time.`,
+      });
+    }
+
+    // Save to MongoDB
+    const newBooking = new Booking(booking);
+    await newBooking.save();
+
+    // Save to local file (backup)
+    const bookingLine = JSON.stringify(booking) + '\n';
+    fs.appendFile('bookings.txt', bookingLine, err => {
+      if (err) {
+        console.error('Error saving booking to file:', err);
+      }
+    });
+
+    // Choose recipient email based on location
+    let recipientEmail = '';
+    if (location === 'hh_towers') {
+      recipientEmail = 'trendynailspothhtowers@gmail.com';
+    } else if (location === 'afya_center') {
+      recipientEmail = 'josephmacharia286@gmail.com';
+    }
+
+    // Email transporter
+    const transporter = nodemailer.createTransport({
+      service: 'gmail',
+      auth: {
+        user: 'trendynailspothhtowers@gmail.com',
+        pass: process.env.PTSO, // Gmail app password from .env
+      },
+    });
+
+    // Email content
+    const mailOptions = {
+      from: 'trendynailspothhtowers@gmail.com',
+      to: recipientEmail,
+      subject: 'New Booking – Trendy_Nailsspot',
+      text: `
 New booking received:
+
 Name: ${name}
 Phone: ${phone}
 Date: ${date}
 Time: ${time}
 Tech: ${nailtech || 'Not selected'}
-service:${service}
+Services: ${service.join(', ')}
 Location: ${location || 'Not selected'}
-    `
-  };
+      `,
+    };
 
-  transporter.sendMail(mailOptions, (err, info) => {
-    if (err) {
-      console.error('Email error:', err);
-      return res.status(500).json({error: err});
-    }
+    // Send email
+    transporter.sendMail(mailOptions, (err, info) => {
+      if (err) {
+        console.error('Email error:', err);
+        return res.status(500).json({ error: 'Failed to send email' });
+      }
 
-    console.log('Email sent:', info.response);
-    res.status(200).json({message:'Booking received and email sent!'});
-  });
+      console.log(' Email sent:', info.response);
+      res.status(200).json({ message: 'Booking received and email sent!' });
+    });
+
+  } catch (error) {
+    console.error('Server error:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
 });
 
+// ================== Start Server ==================
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });

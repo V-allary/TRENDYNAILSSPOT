@@ -77,3 +77,26 @@ body {
     padding: 10px;
     font-size: 1rem;
   }
+
+  .bs-done-button {
+    position: sticky;
+    bottom: 0;
+    background: #fff;
+    border-top: 1px solid #ddd;
+    z-index: 10;
+  }
+  /*   country list  appears when flag is clicked */
+.iti {
+  width: 100%;
+}
+
+.iti__country-list {
+  max-height: 200px;   
+  overflow-y: auto;    
+  z-index: 9999;       
+}
+
+/*   (show only when user opens list) */
+.iti__selected-dial-code {
+  display: none;
+}
