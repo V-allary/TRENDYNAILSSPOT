@@ -49,7 +49,7 @@ const sms = at.SMS;
 app.get('/test-sms', async (req, res) => {
   try {
     const result = await sms.send({
-      to: ['+254793026339'],  // your phone in E.164 format
+      to: ['+254743747840'],  // your phone in E.164 format
       message: 'Hello Vallary ! This is a test SMS from Africa’s Talking Sandbox.',
       from: 'sandbox'         // fixed for sandbox testing
     });
@@ -162,7 +162,7 @@ Location: ${location || 'Not selected'}
         return res.status(500).json({ error: 'Failed to send email' });
       }
 
-      console.log('📧 Email sent:', info.response);
+      console.log('Email sent:', info.response);
       res.status(200).json({ message: 'Booking received, email & SMS sent!' });
     });
 
