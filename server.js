@@ -4,7 +4,6 @@ const bodyParser = require('body-parser');
 const cors = require('cors');
 const fs = require('fs');
 const mongoose = require('mongoose');
-const africastalking = require('africastalking');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
