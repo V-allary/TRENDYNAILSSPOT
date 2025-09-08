@@ -38,13 +38,13 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use(express.static(__dirname));
 
-// ================== Africa’s Talking Setup ==================
-const at = africastalking({
-  apiKey: process.env.AT_API_KEY,  // from your Sandbox account
-  username: 'sandbox'              // must be "sandbox" for testing
+// ================== Africa’s Talking Setup =================
+const africastalking = require('africastalking')({
+  apiKey: process.env.AT_SANDBOX_API_KEY, // Add this to your Render env
+  username: 'sandbox' // Sandbox mode username must be exactly "sandbox"
 });
-const sms = at.SMS;
 
+const sms = africastalking.SMS;
 // ================== Test Route ==================
 app.get('/test-sms', async (req, res) => {
   try {
@@ -105,21 +105,21 @@ app.post('/submit-form', async (req, res) => {
     await newBooking.save();
 
     // --- Send SMS confirmation via Africa’s Talking ---
-    try {
-      if (phone && phone.startsWith('+')) {
-        await sms.send({
-          to: [phone],
-          message: `Hi ${name}, your booking on ${date} at ${time} with Trendy Nailsspot is confirmed. See you soon!`,
-          from: 'sandbox'
-        });
-        console.log('SMS sent to:', phone);
-      } else {
-        console.log('Skipped SMS, invalid phone:', phone);
-      }
-    } catch (smsError) {
-      console.error(' AT SMS error:', smsError);
-    }
-
+    
+     try {
+      if (phone && phone.startsWith("+")) {
+       const result = await sms.send({
+         to: [phone], // Array of recipients
+           message: `Hi ${name}, your booking on ${date} at ${time} with Trendy Nailsspot is confirmed. See you soon!`
+            });
+            console.log("AT SMS sent:", result);
+        } else {
+            console.log("Skipped SMS, invalid phone:", phone);
+          }
+        } catch (smsError) {
+          console.error("Africa's Talking SMS error:", smsError);
+        }
+    
     // Save to local file (backup)
     fs.appendFile('bookings.txt', JSON.stringify(booking) + '\n', err => {
       if (err) console.error('Error saving booking to file:', err);
