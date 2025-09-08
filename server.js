@@ -58,11 +58,9 @@ app.get('/test-sms', async (req, res) => {
     }
 
     const result = await sms.send({
-      to: ['+254743747840'], // test number
-      message: 'Hello Vallary! This is a test SMS from Africa’s Talking Sandbox.',
-      from: 'sandbox',
+      to: ['+254743747840'],
+      message: 'Hello Vallary! This is a test SMS from Africa’s Talking Sandbox',
     });
-
     console.log('SMS sent:', result);
     res.json(result);
   } catch (err) {
