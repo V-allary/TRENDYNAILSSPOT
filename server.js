@@ -5,18 +5,17 @@ const cors = require('cors');
 const fs = require('fs');
 const mongoose = require('mongoose');
 
+// ================== App Setup ==================
 const app = express();
 const PORT = process.env.PORT || 3000;
-
-const mdso = process.env.MDSO; // MongoDB password from .env
+const mdso = process.env.MDSO; // MongoDB password from Render env
 
 // ================== MongoDB Connection ==================
 mongoose.connect(
-  'mongodb+srv://trendy_nailsspot:' + mdso + '@cluster0.ae8ywlg.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0',
-  { useNewUrlParser: true, useUnifiedTopology: true }
+  `mongodb+srv://trendy_nailsspot:${mdso}@cluster0.ae8ywlg.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`
 )
-.then(() => console.log(' MongoDB connected'))
-.catch(err => console.error(' MongoDB error:', err));
+.then(() => console.log('MongoDB connected'))
+.catch(err => console.error('MongoDB error:', err));
 
 // ================== Schema ==================
 const bookingSchema = new mongoose.Schema({
@@ -37,25 +36,25 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use(express.static(__dirname));
 
-// ================== Africa’s Talking Setup =================
+// ================== Africa’s Talking Setup ==================
 const africastalking = require('africastalking')({
-  apiKey: process.env.AT_SANDBOX_API_KEY, // Add this to your Render env
-  username: 'sandbox' // Sandbox mode username must be exactly "sandbox"
+  apiKey: process.env.AT_SANDBOX_API_KEY, // Sandbox API key from Render env
+  username: 'sandbox', // Must stay "sandbox" until production
 });
-
 const sms = africastalking.SMS;
+
 // ================== Test Route ==================
 app.get('/test-sms', async (req, res) => {
   try {
     const result = await sms.send({
-      to: ['+254743747840'],  // your phone in E.164 format
-      message: 'Hello Vallary ! This is a test SMS from Africa’s Talking Sandbox.',
-      from: 'sandbox'         // fixed for sandbox testing
+      to: ['+254743747840'], // Your number for testing
+      message: 'Hello Vallary! This is a test SMS from Africa’s Talking Sandbox ',
+      from: 'sandbox',
     });
     console.log('SMS sent:', result);
     res.json(result);
   } catch (err) {
-    console.error(' SMS error:', err);
+    console.error('SMS error:', err);
     res.status(500).json({ error: 'Failed to send SMS' });
   }
 });
@@ -104,28 +103,28 @@ app.post('/submit-form', async (req, res) => {
     await newBooking.save();
 
     // --- Send SMS confirmation via Africa’s Talking ---
-    
-     try {
-      if (phone && phone.startsWith("+")) {
-       const result = await sms.send({
-         to: [phone], // Array of recipients
-           message: `Hi ${name}, your booking on ${date} at ${time} with Trendy Nailsspot is confirmed. See you soon!`
-            });
-            console.log("AT SMS sent:", result);
-        } else {
-            console.log("Skipped SMS, invalid phone:", phone);
-          }
-        } catch (smsError) {
-          console.error("Africa's Talking SMS error:", smsError);
-        }
-    
+    try {
+      if (phone && phone.startsWith('+')) {
+        const result = await sms.send({
+          to: [phone],
+          message: `Hi ${name}, your booking on ${date} at ${time} with Trendy Nailsspot is confirmed. See you soon! 💅`,
+          from: 'sandbox',
+        });
+        console.log(' AT SMS sent:', result);
+      } else {
+        console.log('Skipped SMS, invalid phone:', phone);
+      }
+    } catch (smsError) {
+      console.error("Africa's Talking SMS error:", smsError);
+    }
+
     // Save to local file (backup)
     fs.appendFile('bookings.txt', JSON.stringify(booking) + '\n', err => {
       if (err) console.error('Error saving booking to file:', err);
     });
 
     // Email setup
-    let recipientEmail =
+    const recipientEmail =
       location === 'hh_towers'
         ? 'trendynailspothhtowers@gmail.com'
         : 'josephmacharia286@gmail.com';
@@ -134,7 +133,7 @@ app.post('/submit-form', async (req, res) => {
       service: 'gmail',
       auth: {
         user: 'trendynailspothhtowers@gmail.com',
-        pass: process.env.PTSO,
+        pass: process.env.PTSO, // Gmail App password from Render env
       },
     });
 
@@ -166,12 +165,12 @@ Location: ${location || 'Not selected'}
     });
 
   } catch (error) {
-    console.error(' Server error:', error);
+    console.error('Server error:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
 });
 
 // ================== Start Server ==================
 app.listen(PORT, () => {
-  console.log(`🚀 Server running on port ${PORT}`);
+  console.log(` Server running on port ${PORT}`);
 });
