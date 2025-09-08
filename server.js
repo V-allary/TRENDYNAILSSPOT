@@ -69,8 +69,8 @@ app.get('/test-sms', async (req, res) => {
 app.get('/', (req, res) => {
   res.sendFile(__dirname + '/index.html');
 });
-
-// Booking route
+ 
+ // Booking route
 app.post('/submit-form', async (req, res) => {
   try {
     let { name, phone, date, time, location, nailtech, service } = req.body;
@@ -78,6 +78,16 @@ app.post('/submit-form', async (req, res) => {
     // Ensure service is always an array
     if (!Array.isArray(service)) {
       service = [service];
+    }
+
+    // --- Clean & format phone number ---
+    if (phone) {
+      phone = phone.trim();
+      if (phone.startsWith("0")) {
+        phone = "+254" + phone.substring(1); // Convert 07... -> +2547...
+      } else if (!phone.startsWith("+")) {
+        phone = "+254" + phone; // Assume Kenya if no +
+      }
     }
 
     const booking = { name, phone, date, time, location, nailtech, service };
@@ -99,40 +109,39 @@ app.post('/submit-form', async (req, res) => {
     const newBooking = new Booking(booking);
     await newBooking.save();
 
-    // Send SMS confirmation via Twilio
-   try {
-   await client.messages.create({
-    body: `Hi ${name}, your booking on ${date} at ${time} with Trendy Nailsspot is confirmed. See you soon!`,
-    from: process.env.TWILIO_PHONE_NUMBER, // your +1 trial number
-    to: phone   // the client’s phone number from booking form
-  });
-  console.log("SMS sent to:", phone);
-  } catch (smsError) {
-  console.error("Twilio SMS error:", smsError);
-  }
+    // --- Send SMS confirmation via Twilio ---
+    try {
+      if (phone && phone.startsWith("+")) {
+        await client.messages.create({
+          body: `Hi ${name}, your booking on ${date} at ${time} with Trendy Nailsspot is confirmed. See you soon!`,
+          from: process.env.TWILIO_PHONE_NUMBER,  
+          to: phone,
+        });
+        console.log("SMS sent to:", phone);
+      } else {
+        console.log(" Skipped SMS, invalid phone:", phone);
+      }
+    } catch (smsError) {
+      console.error(" Twilio SMS error:", smsError);
+    }
 
     // Save to local file (backup)
-    const bookingLine = JSON.stringify(booking) + '\n';
-    fs.appendFile('bookings.txt', bookingLine, err => {
-      if (err) {
-        console.error('Error saving booking to file:', err);
-      }
+    fs.appendFile('bookings.txt', JSON.stringify(booking) + '\n', err => {
+      if (err) console.error('Error saving booking to file:', err);
     });
 
     // Choose recipient email based on location
-    let recipientEmail = '';
-    if (location === 'hh_towers') {
-      recipientEmail = 'trendynailspothhtowers@gmail.com';
-    } else if (location === 'afya_center') {
-      recipientEmail = 'josephmacharia286@gmail.com';
-    }
+    let recipientEmail =
+      location === 'hh_towers'
+        ? 'trendynailspothhtowers@gmail.com'
+        : 'josephmacharia286@gmail.com';
 
     // Email transporter
     const transporter = nodemailer.createTransport({
       service: 'gmail',
       auth: {
         user: 'trendynailspothhtowers@gmail.com',
-        pass: process.env.PTSO, // Gmail app password from .env
+        pass: process.env.PTSO, // Gmail app password
       },
     });
 
@@ -162,11 +171,11 @@ Location: ${location || 'Not selected'}
       }
 
       console.log(' Email sent:', info.response);
-      res.status(200).json({ message: 'Booking received and email sent!' });
+      res.status(200).json({ message: 'Booking received, email & SMS sent!' });
     });
 
   } catch (error) {
-    console.error('Server error:', error);
+    console.error(' Server error:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
 });
