@@ -1,3 +1,4 @@
+ // ================== Imports ==================
 const express = require('express');
 const nodemailer = require('nodemailer');
 const bodyParser = require('body-parser');
@@ -14,8 +15,8 @@ const mdso = process.env.MDSO; // MongoDB password from Render env
 mongoose.connect(
   `mongodb+srv://trendy_nailsspot:${mdso}@cluster0.ae8ywlg.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`
 )
-.then(() => console.log('MongoDB connected'))
-.catch(err => console.error('MongoDB error:', err));
+  .then(() => console.log('MongoDB connected'))
+  .catch(err => console.error(' MongoDB error:', err));
 
 // ================== Schema ==================
 const bookingSchema = new mongoose.Schema({
@@ -37,20 +38,31 @@ app.use(bodyParser.json());
 app.use(express.static(__dirname));
 
 // ================== Africa’s Talking Setup ==================
-const africastalking = require('africastalking')({
-  apiKey: process.env.AT_SANDBOX_API_KEY, // Sandbox API key from Render env
-  username: 'sandbox', // Must stay "sandbox" until production
-});
-const sms = africastalking.SMS;
+let sms = null;
+try {
+  const africastalking = require('africastalking')({
+    apiKey: process.env.AT_SANDBOX_API_KEY, // Set in Render env
+    username: 'sandbox',
+  });
+  sms = africastalking.SMS;
+  console.log('Africa’s Talking initialized');
+} catch (err) {
+  console.warn(' Africa’s Talking not initialized (missing or invalid API key). SMS disabled.');
+}
 
 // ================== Test Route ==================
 app.get('/test-sms', async (req, res) => {
   try {
+    if (!sms) {
+      return res.status(503).json({ error: 'Africa’s Talking not configured. Add AT_SANDBOX_API_KEY in env.' });
+    }
+
     const result = await sms.send({
-      to: ['+254743747840'], // Your number for testing
-      message: 'Hello Vallary! This is a test SMS from Africa’s Talking Sandbox ',
+      to: ['+254743747840'], // test number
+      message: 'Hello Vallary! This is a test SMS from Africa’s Talking Sandbox.',
       from: 'sandbox',
     });
+
     console.log('SMS sent:', result);
     res.json(result);
   } catch (err) {
@@ -73,7 +85,7 @@ app.post('/submit-form', async (req, res) => {
 
     if (!Array.isArray(service)) service = [service];
 
-    // --- Clean & format phone number ---
+    // --- Format phone number ---
     if (phone) {
       phone = phone.trim();
       if (phone.startsWith('0')) {
@@ -98,32 +110,32 @@ app.post('/submit-form', async (req, res) => {
       });
     }
 
-    // Save to MongoDB
+    // Save booking
     const newBooking = new Booking(booking);
     await newBooking.save();
 
-    // --- Send SMS confirmation via Africa’s Talking ---
+    // --- Send SMS confirmation ---
     try {
-      if (phone && phone.startsWith('+')) {
+      if (sms && phone && phone.startsWith('+')) {
         const result = await sms.send({
           to: [phone],
           message: `Hi ${name}, your booking on ${date} at ${time} with Trendy Nailsspot is confirmed. See you soon! 💅`,
           from: 'sandbox',
         });
-        console.log(' AT SMS sent:', result);
+        console.log('AT SMS sent:', result);
       } else {
-        console.log('Skipped SMS, invalid phone:', phone);
+        console.log(' Skipped SMS (client missing or invalid phone):', phone);
       }
     } catch (smsError) {
       console.error("Africa's Talking SMS error:", smsError);
     }
 
-    // Save to local file (backup)
+    // Save backup locally
     fs.appendFile('bookings.txt', JSON.stringify(booking) + '\n', err => {
-      if (err) console.error('Error saving booking to file:', err);
+      if (err) console.error(' Error saving booking to file:', err);
     });
 
-    // Email setup
+    // --- Email notification ---
     const recipientEmail =
       location === 'hh_towers'
         ? 'trendynailspothhtowers@gmail.com'
@@ -165,7 +177,7 @@ Location: ${location || 'Not selected'}
     });
 
   } catch (error) {
-    console.error('Server error:', error);
+    console.error(' Server error:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
 });
