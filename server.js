@@ -99,6 +99,18 @@ app.post('/submit-form', async (req, res) => {
     const newBooking = new Booking(booking);
     await newBooking.save();
 
+    // Send SMS confirmation via Twilio
+   try {
+   await client.messages.create({
+    body: `Hi ${name}, your booking on ${date} at ${time} with Trendy Nailsspot is confirmed. See you soon!`,
+    from: process.env.TWILIO_PHONE_NUMBER, // your +1 trial number
+    to: phone   // the client’s phone number from booking form
+  });
+  console.log("SMS sent to:", phone);
+  } catch (smsError) {
+  console.error("Twilio SMS error:", smsError);
+  }
+
     // Save to local file (backup)
     const bookingLine = JSON.stringify(booking) + '\n';
     fs.appendFile('bookings.txt', bookingLine, err => {
