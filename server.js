@@ -5,6 +5,7 @@ const bodyParser = require('body-parser');
 const cors = require('cors');
 const fs = require('fs');
 const mongoose = require('mongoose');
+require('dotenv').config();
 
 // ================== App Setup ==================
 const app = express();
@@ -16,7 +17,7 @@ mongoose.connect(
   `mongodb+srv://trendy_nailsspot:${mdso}@cluster0.ae8ywlg.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`
 )
   .then(() => console.log('MongoDB connected'))
-  .catch(err => console.error(' MongoDB error:', err));
+  .catch(err => console.error('MongoDB error:', err));
 
 // ================== Schema ==================
 const bookingSchema = new mongoose.Schema({
@@ -27,6 +28,8 @@ const bookingSchema = new mongoose.Schema({
   location: String,
   nailtech: String,
   service: [String],
+  reminded: { type: Boolean, default: false }, // track if reminder SMS sent
+  createdAt: { type: Date, default: Date.now },
 });
 
 const Booking = mongoose.model('Booking', bookingSchema);
@@ -41,33 +44,14 @@ app.use(express.static(__dirname));
 let sms = null;
 try {
   const africastalking = require('africastalking')({
-    apiKey: process.env.AT_SANDBOX_API_KEY, // Set in Render env
-    username: 'sandbox',
+    apiKey: process.env.AT_API_KEY, // Production API key
+    username: process.env.AT_USERNAME, // Production username
   });
   sms = africastalking.SMS;
   console.log('Africa’s Talking initialized');
 } catch (err) {
-  console.warn(' Africa’s Talking not initialized (missing or invalid API key). SMS disabled.');
+  console.warn('Africa’s Talking not initialized. SMS disabled.', err);
 }
-
-// ================== Test Route ==================
-app.get('/test-sms', async (req, res) => {
-  try {
-    if (!sms) {
-      return res.status(503).json({ error: 'Africa’s Talking not configured. Add AT_SANDBOX_API_KEY in env.' });
-    }
-
-    const result = await sms.send({
-      to: ['+254743747840'],
-      message: 'Hello Vallary! This is a test SMS from Africa’s Talking Sandbox',
-    });
-    console.log('SMS sent:', result);
-    res.json(result);
-  } catch (err) {
-    console.error('SMS error:', err);
-    res.status(500).json({ error: 'Failed to send SMS' });
-  }
-});
 
 // ================== Routes ==================
 
@@ -76,7 +60,8 @@ app.get('/', (req, res) => {
   res.sendFile(__dirname + '/index.html');
 });
 
-// Booking route
+
+// Booking submission
 app.post('/submit-form', async (req, res) => {
   try {
     let { name, phone, date, time, location, nailtech, service } = req.body;
@@ -86,21 +71,16 @@ app.post('/submit-form', async (req, res) => {
     // --- Format phone number ---
     if (phone) {
       phone = phone.trim();
-      if (phone.startsWith('0')) {
-        phone = '+254' + phone.substring(1);
-      } else if (!phone.startsWith('+')) {
-        phone = '+254' + phone;
-      }
+      if (phone.startsWith('0')) phone = '+254' + phone.substring(1);
+      else if (!phone.startsWith('+')) phone = '+254' + phone;
     }
 
-    const booking = { name, phone, date, time, location, nailtech, service };
-
-    // Validate location
+    // --- Validate location ---
     if (!['hh_towers', 'afya_center'].includes(location)) {
       return res.status(400).json({ error: 'Invalid location selected.' });
     }
 
-    // Prevent double booking
+    // --- Prevent double booking for same nailtech, date, time ---
     const existingBooking = await Booking.findOne({ date, time, nailtech });
     if (existingBooking) {
       return res.status(400).json({
@@ -108,42 +88,44 @@ app.post('/submit-form', async (req, res) => {
       });
     }
 
-    // Save booking
-    const newBooking = new Booking(booking);
+    // --- Save booking ---
+    const newBooking = new Booking({ name, phone, date, time, location, nailtech, service });
     await newBooking.save();
 
     // --- Send SMS confirmation ---
-    try {
-      if (sms && phone && phone.startsWith('+')) {
+    if (sms && phone && phone.startsWith('+')) {
+      try {
         const result = await sms.send({
           to: [phone],
           message: `Hi ${name}, your booking on ${date} at ${time} with Trendy Nailsspot is confirmed. See you soon! 💅`,
-          from: 'sandbox',
+          from: process.env.AT_SENDER || 'Trendynail',
         });
-        console.log('AT SMS sent:', result);
-      } else {
-        console.log(' Skipped SMS (client missing or invalid phone):', phone);
+        console.log('Confirmation SMS sent:', result);
+      } catch (smsError) {
+        console.error('Error sending confirmation SMS:', smsError);
       }
-    } catch (smsError) {
-      console.error("Africa's Talking SMS error:", smsError);
     }
 
-    // Save backup locally
-    fs.appendFile('bookings.txt', JSON.stringify(booking) + '\n', err => {
-      if (err) console.error(' Error saving booking to file:', err);
+    // --- Save backup locally ---
+    fs.appendFile('bookings.txt', JSON.stringify({ name, phone, date, time, location, nailtech, service }) + '\n', err => {
+      if (err) console.error('Error saving booking to file:', err);
     });
 
     // --- Email notification ---
-    const recipientEmail =
-      location === 'hh_towers'
-        ? 'trendynailspothhtowers@gmail.com'
-        : 'josephmacharia286@gmail.com';
+    let recipientEmail;
+    if (location === 'hh_towers') {
+      recipientEmail = 'trendynailspothhtowers@gmail.com';
+    } else if (location === 'afya_center') {
+      recipientEmail = 'vallarymitchelle4@gmail.com';
+    } else {
+      return res.status(400).json({ error: 'Invalid location selected.' });
+    }
 
     const transporter = nodemailer.createTransport({
       service: 'gmail',
       auth: {
         user: 'trendynailspothhtowers@gmail.com',
-        pass: process.env.PTSO, // Gmail App password from Render env
+        pass: process.env.PTSO,
       },
     });
 
@@ -166,21 +148,23 @@ Location: ${location || 'Not selected'}
 
     transporter.sendMail(mailOptions, (err, info) => {
       if (err) {
-        console.error(' Email error:', err);
+        console.error('Email error:', err);
         return res.status(500).json({ error: 'Failed to send email' });
       }
-
       console.log('Email sent:', info.response);
       res.status(200).json({ message: 'Booking received, email & SMS sent!' });
     });
 
   } catch (error) {
-    console.error(' Server error:', error);
+    console.error('Server error:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
 });
 
 // ================== Start Server ==================
 app.listen(PORT, () => {
-  console.log(` Server running on port ${PORT}`);
+  console.log(`Server running on port ${PORT}`);
 });
+
+// ================== Export Booking Model for reminder.js ==================
+module.exports = Booking;
