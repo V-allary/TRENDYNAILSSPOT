@@ -14,7 +14,7 @@ const mdso = process.env.MDSO; // MongoDB password from Render env
 
 // ================== MongoDB Connection ==================
 mongoose.connect(
-  `mongodb+srv://trendy_nailsspot:${mdso}@cluster0.ae8ywlg.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`
+  `mongodb+srv://trendy_nailsspot:${mdso}@cluster0.ae8ywlg.mongodb.net/trendynailsspot?retryWrites=true&w=majority&appName=Cluster0`
 )
   .then(() => console.log('MongoDB connected'))
   .catch(err => console.error('MongoDB error:', err));
@@ -98,7 +98,7 @@ app.post('/submit-form', async (req, res) => {
         const result = await sms.send({
           to: [phone],
           message: `Hi ${name}, your booking on ${date} at ${time} with Trendy Nailsspot is confirmed. See you soon! 💅`,
-          from: undefined, // default sender
+          from: undefined, // default
         });
         console.log('Confirmation SMS sent:', result);
       } catch (smsError) {
