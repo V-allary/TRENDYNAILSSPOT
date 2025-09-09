@@ -12,7 +12,7 @@ const africastalking = Africastalking({
 const sms = africastalking.SMS;
 
 // --- MongoDB Booking Model ---
-const Booking = require('./booking'); // fixed: you have booking.js not bookingModel.js
+const Booking = require('./booking');    
 
 // --- Connect to MongoDB ---
 mongoose.connect(process.env.MONGO_URI, {
@@ -49,7 +49,7 @@ async function checkReminders() {
   try {
     const bookings = await Booking.find({
       date: reminderTime.toISOString().split('T')[0], // same date
-      time: `${hour.toString().padStart(2,'0')}:${minute.toString().padStart(2,'0')}`
+      
     });
 
     if (bookings.length === 0) {
@@ -73,5 +73,5 @@ async function checkReminders() {
 // --- Run reminder check ---
 checkReminders().then(() => {
   console.log('Reminder job finished.');
-  mongoose.connection.close(); // close DB after running
+  mongoose.connection.close(); 
 });
