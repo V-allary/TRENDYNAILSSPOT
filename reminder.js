@@ -1,83 +1,77 @@
- // ================== Imports ==================
+ // reminder.js
 const mongoose = require('mongoose');
 const Africastalking = require('africastalking');
 require('dotenv').config();
 
-// ================== Africa's Talking Setup ==================
+// --- Africa's Talking configuration ---
 const africastalking = Africastalking({
-  apiKey: process.env.AT_API_KEY,     // Production API key
-  username: process.env.AT_USERNAME   // Production app username
+  apiKey: process.env.AT_API_KEY,        // Production API key
+  username: process.env.AT_USERNAME     // App username
 });
 
 const sms = africastalking.SMS;
 
-// ================== Booking Model ==================
-const Booking = require('./booking'); // Your existing booking model
+// --- MongoDB Booking Model ---
+const Booking = require('./booking'); // fixed: you have booking.js not bookingModel.js
 
-// ================== MongoDB Connection ==================
+// --- Connect to MongoDB ---
 mongoose.connect(process.env.MONGO_URI, {
   useNewUrlParser: true,
   useUnifiedTopology: true
-})
-.then(() => console.log('MongoDB connected for reminders'))
-.catch(err => console.error('MongoDB connection error:', err));
+}).then(() => console.log('MongoDB connected successfully for reminders'))
+  .catch(err => console.log('MongoDB connection error:', err));
 
-// ================== Helper: Send SMS ==================
+// --- Helper function: send SMS ---
 async function sendSMS(phone, message) {
   try {
     const response = await sms.send({
       to: [phone],
-      message,
-      from: undefined // Use Africa's Talking default numeric sender
+      message: message,
     });
-    console.log('SMS sent:', response);
+    console.log(`SMS sent to ${phone}:`, response);
   } catch (err) {
-    console.error('Error sending SMS:', err);
+    console.error(`Error sending SMS to ${phone}:`, err);
   }
 }
 
-// ================== Check Reminders ==================
+// --- Get current time and check bookings ---
 async function checkReminders() {
   const now = new Date();
-  const reminderTime = new Date(now.getTime() + 2 * 60 * 60 * 1000); // 2 hours ahead
+  
+  // Target: bookings exactly 2 hours from now
+  const reminderTime = new Date(now.getTime() + 2 * 60 * 60 * 1000);
+
   const hour = reminderTime.getHours();
   const minute = reminderTime.getMinutes();
 
+  console.log(`Checking reminders for ${reminderTime.toISOString().split('T')[0]} at ${hour}:${minute}`);
+
   try {
-    // Find bookings exactly at the target time and not yet reminded
     const bookings = await Booking.find({
-      date: reminderTime.toISOString().split('T')[0], // match booking date
-      time: `${hour.toString().padStart(2,'0')}:${minute.toString().padStart(2,'0')}`,
-      reminded: { $ne: true } // skip already reminded bookings
+      date: reminderTime.toISOString().split('T')[0], // same date
+      time: `${hour.toString().padStart(2,'0')}:${minute.toString().padStart(2,'0')}`
     });
 
-    if (!bookings.length) {
-      console.log('No bookings to remind at this time.');
+    if (bookings.length === 0) {
+      console.log('ℹNo bookings found for this reminder slot.');
       return;
     }
 
     for (const booking of bookings) {
-      if (!booking.phone) continue;
-
-      // Map location to friendly name
-      let locationName;
-      if (booking.location === 'hh_towers') locationName = 'HH Towers';
-      else if (booking.location === 'afya_center') locationName = 'Around Afya Centre';
-      else locationName = 'your selected location';
-
-      const message = `Hi ${booking.name}, this is a reminder for your Trendy Nailsspot appointment at ${booking.time} at ${locationName} with ${booking.nailtech}.`;
-
+      if (!booking.phone) {
+        console.log(`Skipping booking for ${booking.name}: no phone number.`);
+        continue;
+      }
+      const message = `Hi ${booking.name}, this is a reminder for your Trendy Nailsspot appointment at ${booking.time}.`;
       await sendSMS(booking.phone, message);
-
-      // Mark as reminded to prevent duplicate SMS
-      booking.reminded = true;
-      await booking.save();
     }
-
   } catch (err) {
     console.error('Error fetching bookings:', err);
   }
 }
 
-// ================== Run Reminder Check ==================
-checkReminders();
+// --- Run reminder check ---
+checkReminders().then(() => {
+  console.log('Reminder job finished.');
+  mongoose.connection.close(); // close DB after running
+});
