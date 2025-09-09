@@ -1,19 +1,20 @@
+ // ================== Imports ==================
 const mongoose = require('mongoose');
 const Africastalking = require('africastalking');
 require('dotenv').config();
 
-// Africa's Talking production setup
+// ================== Africa's Talking Setup ==================
 const africastalking = Africastalking({
-  apiKey: process.env.AT_API_KEY,
-  username: process.env.AT_USERNAME
+  apiKey: process.env.AT_API_KEY,     // Production API key
+  username: process.env.AT_USERNAME   // Production app username
 });
 
 const sms = africastalking.SMS;
 
-// Import Booking model
-const Booking = require('./server'); // Booking exported from server.js
+// ================== Booking Model ==================
+const Booking = require('./bookingModel'); // Your existing booking model
 
-// Connect to MongoDB
+// ================== MongoDB Connection ==================
 mongoose.connect(process.env.MONGO_URI, {
   useNewUrlParser: true,
   useUnifiedTopology: true
@@ -21,28 +22,33 @@ mongoose.connect(process.env.MONGO_URI, {
 .then(() => console.log('MongoDB connected for reminders'))
 .catch(err => console.error('MongoDB connection error:', err));
 
-// Helper function to send SMS
+// ================== Helper: Send SMS ==================
 async function sendSMS(phone, message) {
   try {
-    const response = await sms.send({ to: [phone], message });
+    const response = await sms.send({
+      to: [phone],
+      message,
+      from: undefined // Use Africa's Talking default numeric sender
+    });
     console.log('SMS sent:', response);
   } catch (err) {
     console.error('Error sending SMS:', err);
   }
 }
 
-// Check bookings and send reminders 2 hours ahead
+// ================== Check Reminders ==================
 async function checkReminders() {
   const now = new Date();
   const reminderTime = new Date(now.getTime() + 2 * 60 * 60 * 1000); // 2 hours ahead
   const hour = reminderTime.getHours();
+  const minute = reminderTime.getMinutes();
 
   try {
-    // Fetch bookings for this hour that haven't been reminded yet
+    // Find bookings exactly at the target time and not yet reminded
     const bookings = await Booking.find({
-      date: reminderTime.toISOString().split('T')[0],
-      time: { $regex: `^${hour.toString().padStart(2,'0')}:` },
-      reminded: { $ne: true }
+      date: reminderTime.toISOString().split('T')[0], // match booking date
+      time: `${hour.toString().padStart(2,'0')}:${minute.toString().padStart(2,'0')}`,
+      reminded: { $ne: true } // skip already reminded bookings
     });
 
     if (!bookings.length) {
@@ -53,11 +59,11 @@ async function checkReminders() {
     for (const booking of bookings) {
       if (!booking.phone) continue;
 
-      // Ensure valid location
+      // Map location to friendly name
       let locationName;
       if (booking.location === 'hh_towers') locationName = 'HH Towers';
       else if (booking.location === 'afya_center') locationName = 'Around Afya Centre';
-      else locationName = 'your chosen location';
+      else locationName = 'your selected location';
 
       const message = `Hi ${booking.name}, this is a reminder for your Trendy Nailsspot appointment at ${booking.time} at ${locationName} with ${booking.nailtech}.`;
 
@@ -73,5 +79,5 @@ async function checkReminders() {
   }
 }
 
-// Run the reminder check
+// ================== Run Reminder Check ==================
 checkReminders();

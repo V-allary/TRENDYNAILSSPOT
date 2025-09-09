@@ -98,7 +98,7 @@ app.post('/submit-form', async (req, res) => {
         const result = await sms.send({
           to: [phone],
           message: `Hi ${name}, your booking on ${date} at ${time} with Trendy Nailsspot is confirmed. See you soon! 💅`,
-          from: process.env.AT_SENDER || 'Trendynail',
+          from: undefined, // default sender
         });
         console.log('Confirmation SMS sent:', result);
       } catch (smsError) {
