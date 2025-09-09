@@ -12,7 +12,7 @@ const africastalking = Africastalking({
 const sms = africastalking.SMS;
 
 // ================== Booking Model ==================
-const Booking = require('./bookingModel'); // Your existing booking model
+const Booking = require('./booking'); // Your existing booking model
 
 // ================== MongoDB Connection ==================
 mongoose.connect(process.env.MONGO_URI, {
