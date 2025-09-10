@@ -55,9 +55,7 @@ async function checkReminders() {
 
   try {
     const bookings = await Booking.find({
-      date: targetDate,
-      time: targetTime,
-      reminded: false,
+      date: reminderTime.toISOString().split('T')[0],//same date
     });
 
     if (bookings.length === 0) {
