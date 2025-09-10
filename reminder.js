@@ -1,23 +1,31 @@
-  // reminder.js
-const mongoose = require('mongoose');
-const Africastalking = require('africastalking');
-require('dotenv').config();
+ // reminder.js
+import dotenv from "dotenv";
+import mongoose from "mongoose";
+import Africastalking from "africastalking";
+import Booking from "./booking.js"; // make sure booking.js exports your schema/model
+
+// --- Load environment variables ---
+dotenv.config();
+
+// --- MongoDB connection ---
+const uri = process.env.MONGO_URI;
+
+if (!uri) {
+  console.error(" MONGO_URI is not set. Please add it in Render Environment Variables.");
+  process.exit(1);
+}
+
+mongoose.connect(uri, { useNewUrlParser: true, useUnifiedTopology: true })
+  .then(() => console.log(" MongoDB connected for reminders"))
+  .catch(err => console.error("MongoDB connection error:", err));
 
 // --- Africa's Talking configuration ---
 const africastalking = Africastalking({
-  apiKey: process.env.AT_API_KEY,        // Production API key
-  username: process.env.AT_USERNAME     // App username
+  apiKey: process.env.AT_API_KEY,     // Production API key
+  username: process.env.AT_USERNAME, // Your AT app username
 });
 
 const sms = africastalking.SMS;
-
-// --- MongoDB Booking Model ---
-const Booking = require('./booking'); // booking.js exports your schema
-
-// --- Connect to MongoDB ---
-mongoose.connect(process.env.MONGO_URI)
-  .then(() => console.log('MongoDB connected successfully for reminders'))
-  .catch(err => console.error('MongoDB connection error:', err));
 
 // --- Helper function: send SMS ---
 async function sendSMS(phone, message) {
@@ -25,31 +33,23 @@ async function sendSMS(phone, message) {
     const response = await sms.send({
       to: [phone],
       message: message,
-      // 'from' left undefined until Sender ID TRENDYNAILS is approved
+      // no "from" until Sender ID TRENDYNAILS is approved
     });
-    console.log(' SMS sent:', response);
+    console.log("SMS sent:", response);
   } catch (err) {
-    console.error(' Error sending SMS:', err);
+    console.error("Error sending SMS:", err);
   }
-}
-
-// --- Round time to nearest 30 minutes ---
-function roundToNearest30(date) {
-  const ms = 1000 * 60 * 30; // 30 minutes in ms
-  return new Date(Math.ceil(date.getTime() / ms) * ms);
 }
 
 // --- Reminder check ---
 async function checkReminders() {
   const now = new Date();
-  console.log(`Checking reminders for ${now.toISOString().slice(0,16).replace('T',' ')}`);
+  console.log(`Checking reminders at ${now.toISOString().slice(0, 16).replace("T", " ")}`);
 
-  // Look for bookings 2 hours ahead, rounded to nearest 30 min
+  // 2 hours ahead
   const reminderTime = new Date(now.getTime() + 2 * 60 * 60 * 1000);
-  const rounded = roundToNearest30(reminderTime);
-
-  const targetDate = rounded.toISOString().split('T')[0]; // yyyy-mm-dd
-  const targetTime = rounded.toTimeString().slice(0,5);   // HH:mm
+  const targetDate = reminderTime.toISOString().split("T")[0]; // yyyy-mm-dd
+  const targetTime = reminderTime.toTimeString().slice(0, 5);  // HH:mm
 
   console.log(`🔍 Looking for bookings at ${targetDate} ${targetTime}`);
 
@@ -57,29 +57,32 @@ async function checkReminders() {
     const bookings = await Booking.find({
       date: targetDate,
       time: targetTime,
-      reminded: false
+      reminded: false,
     });
 
     if (bookings.length === 0) {
-      console.log('ℹ No bookings found for this reminder slot.');
+      console.log("ℹ No bookings found for this reminder slot.");
       return;
     }
 
     for (const booking of bookings) {
-      if (!booking.phone) continue;
-      const message = `Hi ${booking.name}, this is a reminder for your Trendy Nailsspot appointment today at ${booking.time}. 💅`;
+      if (!booking.phone) {
+        console.log(`⚠ Skipping ${booking.name}: no phone number.`);
+        continue;
+      }
+
+      const message = `Hi ${booking.name}, this is a reminder for your Trendy Nailsspot appointment at ${booking.time}.`;
       await sendSMS(booking.phone, message);
 
       booking.reminded = true;
       await booking.save();
-      console.log(`Reminder sent and marked for ${booking.name}`);
     }
   } catch (err) {
-    console.error(' Error fetching bookings:', err);
+    console.error(" Error fetching bookings:", err);
   }
 
-  console.log('Reminder job finished.');
+  console.log("Reminder job finished.");
 }
 
 // --- Run job ---
-checkReminders().then(() => process.exit(0));
+checkReminders().then(() => process.exit(0));  
