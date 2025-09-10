@@ -15,7 +15,7 @@ const sms = africastalking.SMS;
 const Booking = require('./booking'); // booking.js exports your schema
 
 // --- Connect to MongoDB ---
-mongoose.connect(process.env.MONGO_URL)
+mongoose.connect(process.env.MONGO_URI)
   .then(() => console.log('MongoDB connected successfully for reminders'))
   .catch(err => console.error('MongoDB connection error:', err));
 
