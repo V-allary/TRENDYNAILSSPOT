@@ -53,13 +53,28 @@ try {
   console.warn('Africa’s Talking not initialized. SMS disabled.', err);
 }
 
+// ================== Helpers ==================
+
+// Round to nearest 30 minutes
+function roundToNearest30(timeStr) {
+  const [hour, minute] = timeStr.split(':').map(Number);
+  const date = new Date();
+  date.setHours(hour, minute, 0, 0);
+
+  const ms = 1000 * 60 * 30; // 30 min
+  const rounded = new Date(Math.round(date.getTime() / ms) * ms);
+
+  const hh = String(rounded.getHours()).padStart(2, '0');
+  const mm = String(rounded.getMinutes()).padStart(2, '0');
+  return `${hh}:${mm}`;
+}
+
 // ================== Routes ==================
 
 // Homepage
 app.get('/', (req, res) => {
   res.sendFile(__dirname + '/index.html');
 });
-
 
 // Booking submission
 app.post('/submit-form', async (req, res) => {
@@ -68,11 +83,16 @@ app.post('/submit-form', async (req, res) => {
 
     if (!Array.isArray(service)) service = [service];
 
-    // --- Format phone number ---
+    // --- Format phone ---
     if (phone) {
       phone = phone.trim();
       if (phone.startsWith('0')) phone = '+254' + phone.substring(1);
       else if (!phone.startsWith('+')) phone = '+254' + phone;
+    }
+
+    // --- Round time to nearest 30 mins ---
+    if (time) {
+      time = roundToNearest30(time);
     }
 
     // --- Validate location ---
@@ -80,7 +100,7 @@ app.post('/submit-form', async (req, res) => {
       return res.status(400).json({ error: 'Invalid location selected.' });
     }
 
-    // --- Prevent double booking for same nailtech, date, time ---
+    // --- Prevent double booking ---
     const existingBooking = await Booking.findOne({ date, time, nailtech });
     if (existingBooking) {
       return res.status(400).json({
@@ -93,23 +113,27 @@ app.post('/submit-form', async (req, res) => {
     await newBooking.save();
 
     // --- Send SMS confirmation ---
-if (sms && phone && phone.startsWith('+')) {
-  try {
-    const result = await sms.send({
-      to: [phone],
-      message: `Hi ${name}, your booking on ${date} at ${time} with Trendy Nailsspot is confirmed. See you soon! 💅`,
-      // no "from" → Africa's Talking will use your default sender
-    });
-    console.log('Confirmation SMS sent:', result);
-  } catch (smsError) {
-    console.error('Error sending confirmation SMS:', smsError);
-  }
-}
+    if (sms && phone && phone.startsWith('+')) {
+      try {
+        const result = await sms.send({
+          to: [phone],
+          message: `Hi ${name}, your booking on ${date} at ${time} with Trendy Nailsspot is confirmed. See you soon! 💅`,
+          // no "from" until Sender ID approved
+        });
+        console.log('Confirmation SMS sent:', result);
+      } catch (smsError) {
+        console.error('Error sending confirmation SMS:', smsError);
+      }
+    }
 
     // --- Save backup locally ---
-    fs.appendFile('bookings.txt', JSON.stringify({ name, phone, date, time, location, nailtech, service }) + '\n', err => {
-      if (err) console.error('Error saving booking to file:', err);
-    });
+    fs.appendFile(
+      'bookings.txt',
+      JSON.stringify({ name, phone, date, time, location, nailtech, service }) + '\n',
+      err => {
+        if (err) console.error('Error saving booking to file:', err);
+      }
+    );
 
     // --- Email notification ---
     let recipientEmail;
@@ -117,8 +141,6 @@ if (sms && phone && phone.startsWith('+')) {
       recipientEmail = 'trendynailspothhtowers@gmail.com';
     } else if (location === 'afya_center') {
       recipientEmail = 'vallarymitchelle4@gmail.com';
-    } else {
-      return res.status(400).json({ error: 'Invalid location selected.' });
     }
 
     const transporter = nodemailer.createTransport({
@@ -166,5 +188,5 @@ app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
 
-// ================== Export Booking Model for reminder.js ==================
+// ================== Export Booking Model ==================
 module.exports = Booking;
