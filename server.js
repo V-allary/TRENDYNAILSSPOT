@@ -93,7 +93,6 @@ app.post('/submit-form', async (req, res) => {
     await newBooking.save();
 
     // --- Send SMS confirmation ---
-    // --- Send SMS confirmation ---
 if (sms && phone && phone.startsWith('+')) {
   try {
     const result = await sms.send({
