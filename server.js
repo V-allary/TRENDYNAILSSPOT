@@ -93,18 +93,19 @@ app.post('/submit-form', async (req, res) => {
     await newBooking.save();
 
     // --- Send SMS confirmation ---
-    if (sms && phone && phone.startsWith('+')) {
-      try {
-        const result = await sms.send({
-          to: [phone],
-          message: `Hi ${name}, your booking on ${date} at ${time} with Trendy Nailsspot is confirmed. See you soon! 💅`,
-          from: undefined, // default
-        });
-        console.log('Confirmation SMS sent:', result);
-      } catch (smsError) {
-        console.error('Error sending confirmation SMS:', smsError);
-      }
-    }
+    // --- Send SMS confirmation ---
+if (sms && phone && phone.startsWith('+')) {
+  try {
+    const result = await sms.send({
+      to: [phone],
+      message: `Hi ${name}, your booking on ${date} at ${time} with Trendy Nailsspot is confirmed. See you soon! 💅`,
+      // no "from" → Africa's Talking will use your default sender
+    });
+    console.log('Confirmation SMS sent:', result);
+  } catch (smsError) {
+    console.error('Error sending confirmation SMS:', smsError);
+  }
+}
 
     // --- Save backup locally ---
     fs.appendFile('bookings.txt', JSON.stringify({ name, phone, date, time, location, nailtech, service }) + '\n', err => {
