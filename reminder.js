@@ -12,14 +12,12 @@ const africastalking = Africastalking({
 const sms = africastalking.SMS;
 
 // --- MongoDB Booking Model ---
-const Booking = require('./booking');    
+const Booking = require('./booking'); // corrected filename since you have booking.js
 
 // --- Connect to MongoDB ---
-mongoose.connect(process.env.MONGO_URI, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true
-}).then(() => console.log('MongoDB connected successfully for reminders'))
-  .catch(err => console.log('MongoDB connection error:', err));
+mongoose.connect(process.env.MONGO_URL)
+  .then(() => console.log('MongoDB connected successfully for reminders'))
+  .catch(err => console.error('MongoDB connection error:', err));
 
 // --- Helper function: send SMS ---
 async function sendSMS(phone, message) {
@@ -27,51 +25,50 @@ async function sendSMS(phone, message) {
     const response = await sms.send({
       to: [phone],
       message: message,
+      //   No 'from' while Sender ID is pending approval
     });
-    console.log(`SMS sent to ${phone}:`, response);
+    console.log('SMS sent:', response);
   } catch (err) {
-    console.error(`Error sending SMS to ${phone}:`, err);
+    console.error('Error sending SMS:', err);
   }
 }
 
-// --- Get current time and check bookings ---
+// --- Reminder check ---
 async function checkReminders() {
   const now = new Date();
-  
-  // Target: bookings exactly 2 hours from now
+  console.log(`Checking reminders for ${now.toISOString().slice(0,16).replace('T',' ')}`);
+
+  // Look for bookings exactly 2 hours ahead
   const reminderTime = new Date(now.getTime() + 2 * 60 * 60 * 1000);
-
-  const hour = reminderTime.getHours();
-  const minute = reminderTime.getMinutes();
-
-  console.log(`Checking reminders for ${reminderTime.toISOString().split('T')[0]} at ${hour}:${minute}`);
+  const targetDate = reminderTime.toISOString().split('T')[0]; // yyyy-mm-dd
+  const targetTime = reminderTime.toTimeString().slice(0,5);   // HH:mm
 
   try {
     const bookings = await Booking.find({
-      date: reminderTime.toISOString().split('T')[0], // same date
-      
+      date: targetDate,
+      time: targetTime,
+      reminded: false
     });
 
     if (bookings.length === 0) {
-      console.log('ℹNo bookings found for this reminder slot.');
+      console.log('ℹ No bookings found for this reminder slot.');
       return;
     }
 
     for (const booking of bookings) {
-      if (!booking.phone) {
-        console.log(`Skipping booking for ${booking.name}: no phone number.`);
-        continue;
-      }
+      if (!booking.phone) continue;
       const message = `Hi ${booking.name}, this is a reminder for your Trendy Nailsspot appointment at ${booking.time}.`;
       await sendSMS(booking.phone, message);
+
+      booking.reminded = true;
+      await booking.save();
     }
   } catch (err) {
     console.error('Error fetching bookings:', err);
   }
+
+  console.log('Reminder job finished.');
 }
 
-// --- Run reminder check ---
-checkReminders().then(() => {
-  console.log('Reminder job finished.');
-  mongoose.connection.close(); 
-});
+// --- Run job ---
+checkReminders().then(() => process.exit(0));
