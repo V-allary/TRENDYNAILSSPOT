@@ -140,7 +140,7 @@ app.post('/submit-form', async (req, res) => {
     if (location === 'hh_towers') {
       recipientEmail = 'trendynailspothhtowers@gmail.com';
     } else if (location === 'afya_center') {
-      recipientEmail = 'vallarymitchelle4@gmail.com';
+      recipientEmail = 'josephmacharia286@gmail.com';
     }
 
     const transporter = nodemailer.createTransport({
