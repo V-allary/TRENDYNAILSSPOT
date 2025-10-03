@@ -1,8 +1,9 @@
- // reminder.js
-import dotenv from "dotenv";
-import mongoose from "mongoose";
-import Africastalking from "africastalking";
-import Booking from "./booking.js"; // make sure booking.js exports your schema/model
+  // reminder.js (CommonJS)
+
+const dotenv = require("dotenv");
+const mongoose = require("mongoose");
+const Africastalking = require("africastalking");
+const Booking = require("./booking.js"); // keep the same filename
 
 // --- Load environment variables ---
 dotenv.config();
@@ -16,8 +17,12 @@ if (!uri) {
 }
 
 mongoose.connect(uri, { useNewUrlParser: true, useUnifiedTopology: true })
-  .then(() => console.log(" MongoDB connected for reminders"))
-  .catch(err => console.error("MongoDB connection error:", err));
+  .then(() => console.log("MongoDB connected for reminders"))
+  .catch(err => {
+    console.error("MongoDB connection error:", err);
+    // optional: exit so cron reports failure
+    process.exit(1);
+  });
 
 // --- Africa's Talking configuration ---
 const africastalking = Africastalking({
@@ -51,36 +56,45 @@ async function checkReminders() {
   const targetDate = reminderTime.toISOString().split("T")[0]; // yyyy-mm-dd
   const targetTime = reminderTime.toTimeString().slice(0, 5);  // HH:mm
 
-  console.log(`🔍 Looking for bookings at ${targetDate} ${targetTime}`);
+  console.log(`Looking for bookings at ${targetDate} ${targetTime}`);
 
   try {
     const bookings = await Booking.find({
-      date: reminderTime.toISOString().split('T')[0],//same date
+      date: targetDate,
     });
 
-    if (bookings.length === 0) {
+    if (!bookings || bookings.length === 0) {
       console.log("ℹ No bookings found for this reminder slot.");
       return;
     }
 
     for (const booking of bookings) {
       if (!booking.phone) {
-        console.log(`⚠ Skipping ${booking.name}: no phone number.`);
+        console.log(`⚠ Skipping ${booking.name || booking._id}: no phone number.`);
         continue;
       }
 
       const message = `Hi ${booking.name}, this is a reminder for your Trendy Nailsspot appointment at ${booking.time}.`;
-      await sendSMS(booking.phone, message);
+      await sendSMS(booking.phone, message).catch(err => {
+        console.error("sendSMS failed for", booking.phone, err);
+      });
 
       booking.reminded = true;
-      await booking.save();
+      await booking.save().catch(err => {
+        console.error("failed to save reminded flag for booking", booking._id, err);
+      });
     }
   } catch (err) {
-    console.error(" Error fetching bookings:", err);
+    console.error("Error fetching bookings:", err);
   }
 
-  console.log("Reminder job finished.");
+  console.log(" Reminder job finished.");
 }
 
 // --- Run job ---
-checkReminders().then(() => process.exit(0));  
+checkReminders()
+  .then(() => process.exit(0))
+  .catch(err => {
+    console.error("Reminder job fatal error:", err);
+    process.exit(1);
+  });
