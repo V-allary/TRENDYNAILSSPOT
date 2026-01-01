@@ -3,403 +3,262 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Trendy_Nailsspot</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet" />
-  <link rel="stylesheet" href="style.css"/>
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display&display=swap" rel="stylesheet">
-  <link rel="stylesheet"  href="https://cdn.jsdelivr.net/npm/bootstrap-select@1.14.0-beta3/dist/css/bootstrap-select.min.css">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.19/css/intlTelInput.css" />
+  <title>Vallary Mitchelle | Web Developer</title>
+  <link rel="stylesheet" href="style.css" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://unpkg.com/aos@2.3.4/dist/aos.css" />
+
+  <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
 </head>
-
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <body>
-  <!-- ===== NAVIGATION BAR ===== -->
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top shadow-sm">
-  <div class="container">
-    <!-- Brand/Logo -->
-    <a class="navbar-brand fw-bold text-uppercase d-flex align-items-center" href="#home">
-      <img src="Logo.jpg" alt="TrendyNailsspot Logo" height="35" class="me-2">
-      Trendy Nails
-    </a>
- 
-    <!-- Mobile Toggle -->
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
-      aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-      <span class="navbar-toggler-icon"></span>
-    </button>
-
-    <!-- Navbar Links -->
-    <div class="collapse navbar-collapse" id="navbarNav">
-      <ul class="navbar-nav ms-auto">
-        <li class="nav-item">
-          <a class="nav-link active" aria-current="page" href="#home">Home</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="#service">Services</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="#Booking">Book Appointment</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="#Gallery">Gallery</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="#Contact">Contact</a>
-        </li>
-      </ul>
-    </div>
-  </div>
-</nav>
-<!-- ===== END NAVIGATION BAR ===== -->
-
-
-  <header id="home" class="text-black text-center py-5" style="background-image: url('hero.jpg'); background-size: cover; background-position: center;">
-    <div class="container py-5">
-      <h1 class="display-4">Welcome to Trendy_Nailsspot</h1>
-      <p class="lead">A perfect Nailspot to bring Your Aura Back</p>
-      <a href="#Booking" class="btn btn-light mt-3">Book Appointment</a>
-    </div>
-  </header>
-  <div class="container py-5">
-  </div>
-
-
-  <section id="Services" class="container py-5">
-    <h1 class="text-center mb-4">Our Services</h1>
     
-
-    <div class="row">
-      <div class="col-md-6">
-        <h2>APPLICATION</h2>
-        <ul class="list-unstyled">
-          <li class="d-flex justify-content-between"><span>Gel</span><span>Ksh700</span></li>
-          <li class="d-flex justify-content-between"><span>Matte Gel</span><span>Ksh800</span></li>
-          <li class="d-flex justify-content-between"><span>French</span><span>Ksh900</span></li>
-          <li class="d-flex justify-content-between"><span>Gel Ombre</span><span>Ksh1,000</span></li>
+    <!-- Navbar -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top shadow">
+    <div class="container" data-aos="fade-up">
+  
+      <!-- Logo -->
+      <a class="navbar-brand fw-bold" href="#home">
+        <img src="Brand logo.png" width="48"  class="me-2">
+        VMDIGITAL
+      </a>
+  
+      <!-- Toggler button -->
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+        aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+  
+      <!-- Navigation Links -->
+      <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+        <ul class="navbar-nav">
+          <li class="nav-item">
+            <a class="nav-link active" href="#home">Home</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#about">About Me</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#my-work">My Work</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#services">My Services</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#contact">Contact Me</a>
+          </li>
         </ul>
       </div>
+  
     </div>
-    <div class="col-md-6">
-      <h2>MANICURE</h2>
-      <ul class="list-unstyled">
-        <li class="d-flex justify-content-between"><span>Plain Ins</span><span>Ksh500</span></li>
-        <li class="d-flex justify-content-between"><span>Gents</span><span>Ksh500</span></li>
-        <li class="d-flex justify-content-between"><span>Regular Ins (Includes Scrubbing)<span>Ksh1,000</span></li>
-      </ul>
+  </nav>
+
+  <!-- Hero Section -->
+  <section class="hero d-flex align-items-center text-center text-white" style="background: url('New\ VM.jpg') center center/cover no-repeat; height: 75vh;">
+    <div class="container" data-aos="fade-up">
+      <h1 class="display-5 fw-bold"></h1>
+      <p class="lead mb-4">Web Developer & Design</p>
+      <a href="#contact" class="btn btn-light btn-lg px-4">Work With Me</a>
     </div>
-    <div class="col-md-6">
-      <h2>PEDICURE</h2>
-      <ul class="list-unstyled">
-        <li class="d-flex justify-content-between"><span>Normal plain</span><span>Ksh800</span></li>
-        <li class="d-flex justify-content-between"><span>Regular P.g</span><span>Ksh1,500</span></li>
-        <li class="d-flex justify-content-between"><span>Gents</span><span>Ksh1,000</span></li>
-        <li class="d-flex justify-content-between"><span>Signature</span><span>Ksh2,000</span></li>
-        <li class="d-flex justify-content-between"><span>Jelly</span><span>Ksh2,500</span></li>
-      </ul>
+  </section>
+
+  <!-- About Section -->
+  <section id="about" class="container py-5">
+    <div class="d-flex flex-md-row flex-column align-items-center">
+      <!-- Image Section -->
+      <div class="about-img-wrapper me-md-4 mb-4 mb-md-0">
+      </div>
+  
+      <!-- Text Section -->
+      <div class="about-text">
+        <h2>About Me</h2>
+        <p>I’m a passionate Web Developer, I design high-converting websites that grow businesses. I bring brands to life online.</p>
+        <p>My journey began with a deep curiosity about how the internet works—from design to code to content. Over time, I fell in love with the magic of building websites that not only look good but also deliver real results. Whether I'm crafting a brand-new site or revamping one, I always focus on clean code, modern design, that speak to your audience.</p>
+        <p>When I’m not debugging code or brainstorming content ideas, you’ll find me styling beauty clients, exploring trends, or leveling up my skills in tech and entrepreneurship. I believe in combining creativity and logic—and I bring that energy into every project I take on.</p>
+        <p>If you're looking for someone who can design, build, and grow your digital brand with care, strategy, and style — let’s connect. I’d love to bring your vision to life.</p>
+      </div>
     </div>
-    
-    <div class="col-md-6">
-      <h2>OVERLAY</h2>
-      <ul class="list-unstyled">
-        <li class="d-flex justify-content-between"><span>Natural Builder</span><span>Ksh1,500</span></li>
-        <li class="d-flex justify-content-between"><span>Natural Acrylic</span><span>Ksh2,000</span></li>
-        <li class="d-flex justify-content-between"><span>Tips + Overlay</span><span>Ksh2,000</span></li>
-        <li class="d-flex justify-content-between"><span>Extended</span><span>Ksh2,500</span></li>
-      </ul>
-    </div>
-    
-    <div class="col-md-6">
-      <h2>NAIL EXTENSION</h2>
-      <ul class="list-unstyled">
-        <li class="d-flex justify-content-between"><span>Tips Gel plain</span><span>Ksh1,500</span></li>
-        <li class="d-flex justify-content-between"><span>Acrylic + Gel</span><span>Ksh3,000</span></li>
-        <li class="d-flex justify-content-between"><span>Acrylic powder</span><span>Ksh3,500</span></li>
-        <li class="d-flex justify-content-between"><span>Sculpting</span><span>Ksh4,500</span></li>
-      </ul>
-    </div>
-    
-    <div class="col-md-6">
-      <h2>INFILL/REFILL</h2>
-      <ul class="list-unstyled">
-        <li class="d-flex justify-content-between"><span>Builder</span><span>Ksh1,500</span></li>
-        <li class="d-flex justify-content-between"><span>Acrylic</span><span>Ksh2,000</span></li>
-      </ul>
-    </div>
-    
-    <div class="col-md-6">
-      <h2>TOE NAILS</h2>
-      <ul class="list-unstyled">
-        <li class="d-flex justify-content-between"><span>Toe Gel</span><span>Ksh700</span></li>
-        <li class="d-flex justify-content-between"><span>Overlay Gel</span><span>Ksh1,500</span></li>
-        <li class="d-flex justify-content-between"><span>Tips Gel</span><span>Ksh1,500</span></li>
-        <li class="d-flex justify-content-between"><span>Acrylic Gel</span><span>Ksh2,000</span></li>
-        <li class="d-flex justify-content-between"><span>Acrylic Powder</span><span>Ksh2,000</span></li>
-      </ul>
-    </div>
-    
-    <div class="col-md-6">
-      <h2>EYEBROWS</h2>
-      <ul class="list-unstyled">
-        <li class="d-flex justify-content-between"><span>Razor</span><span>Ksh200</span></li>
-        <li class="d-flex justify-content-between"><span>Threading</span><span>Ksh300</span></li>
-      </ul>
-    </div>
-    
-    <div class="col-md-6">
-      <h2>LASHES</h2>
-      <ul class="list-unstyled">
-        <li class="d-flex justify-content-between"><span>Strip</span><span>Ksh700</span></li>
-        <li class="d-flex justify-content-between"><span>Single</span><span>Ksh1,500</span></li>
-      </ul>
-    </div>
-    
-    <div class="col-md-6">
-      <h2>PIERCINGS</h2>
-      <ul class="list-unstyled">
-        <li class="d-flex justify-content-between"><span>Earlobe</span><span>Ksh500</span></li>
-        <li class="d-flex justify-content-between"><span>Nose</span><span>Ksh500 / 1,000</span></li>
-        <li class="d-flex justify-content-between"><span>Smile</span><span>Ksh1,500</span></li>
-        <li class="d-flex justify-content-between"><span>Tongue</span><span>Ksh2,000</span></li>
-        <li class="d-flex justify-content-between"><span>Navel</span><span>Ksh2,000</span></li>
-      </ul>
-    </div>
+  </section>
+
+  <!-- Services Section -->
+  <section id="services" class="py-5 bg-light">
+    <div class="container">
+      <h2 class="text-center fw-bold mb-5" data-aos="fade-up">Services Offered</h2>
+      <div class="row g-4">
         
-    <div class="col-md-6">
-      <h2>DECORATIONS</h2>
-      <ul class="list-unstyled">
-        <li class="d-flex justify-content-between">
-          <span>Stones (per finger)</span>
-          <span>Ksh100</span>
-        </li>
-        <li class="d-flex justify-content-between">
-          <span>Marble</span>
-          <span>Ksh100</span>
-        </li>
-        <li class="d-flex justify-content-between">
-          <span>Free Hands</span>
-          <span>Ksh200</span>
-        </li>
-        <li class="d-flex justify-content-between">
-          <span>Fullset Stones</span>
-          <span>Ksh500</span>
-        </li>
-        <li class="d-flex justify-content-between">
-          <span>Chrome Nails</span>
-          <span>Ksh500</span>
-        </li>
-        <li class="d-flex justify-content-between">
-          <span>Free Hands Art</span>
-          <span>Ksh500</span>
-        </li>
-      </ul>
-    </div>
-
-
-  </section>
-
-
-  <section id="Gallery" class="container py-5 text-center">
-    <h1>Gallery</h1>
-    <div class="row "> 
-      <div class="col-6 col-md-4 mb-3"><img src="IMG1.jpg" class="img-fluid" alt="Gallery 1" /></div>
-      <div class="col-6 col-md-4 mb-3"><img src="IMG2.jpg" class="img-fluid" alt="Gallery 2" /></div>
-      <div class="col-6 col-md-4 mb-3"><img src="IMG3.jpg" class="img-fluid" alt="Gallery 3" /></div>
-      <div class="col-6 col-md-4 mb-3"><img src="IMG4.jpg" class="img-fluid" alt="Gallery 4" /></div>
-      <div class="col-6 col-md-4 mb-3"><img src="IMG5.jpg" class="img-fluid" alt="Gallery 5" /></div>
-      <div class="col-6 col-md-4 mb-3"><img src="IMG6.jpg" class="img-fluid" alt="Gallery 6" /></div>
-      <div class="col-6 col-md-4 mb-3"><img src="IMG7.jpg" class="img-fluid" alt="Gallery 7" /></div>
-      <div class="col-6 col-md-4 mb-3"><img src="IMG8.jpg" class="img-fluid" alt="Gallery 8" /></div>
-    </div>
-  </section>
-
-
-  <section id="Booking" class="container py-5">
-    <h1 class="text-center">Book an Appointment</h1>
-    <form id="booking-form" action="https://trendynailsspot.co.ke/submit-form" method="POST">
-      <div class="mb-3">
-        <label for="name">Full Name:</label><br/>
-        <input type="text" id="name" name="name"  required /><br/>
-      </div>
-      <div class="mb-3">
-        <label class="form-label">Phone</label>
-        <input id="phone" name="phone" type="tel" class="form-control" required>
-        <div class="invalid-feedback">Phone Number Required.</div>
-      </div>
-      <div class="mb-3">
-        <label for="service" class="form-label">Choose Services:</label>
-        <select id="service" name="service[]" class="selectpicker form-control" multiple data-live-search="true" title="Preferred Service(s)">
-          <optgroup label="Application">
-            <option value="Gel">Gel - Ksh700</option>
-            <option value="Matte Gel">Matte Gel - Ksh800</option>
-            <option value="French Gel">French Gel - Ksh900</option>
-            <option value="Gelomber">Gel Omber-ksh1,000</option>
-          </optgroup>
-          <optgroup label="Manicure">
-            <option value="Plain Ins">Plain Ins - Ksh500</option>
-            <option value="Gents">Gents-ksh500</option>
-            <option value="Regular Ins">Regular Ins - Ksh1000</option>
-    
-          </optgroup>
-          <optgroup label="Pedicure">
-            <option value="Normal Plain - Ksh800">Normal Plain - Ksh800</option>
-            <option value="regularp.g">Regular P.g-ksh1,500</option>
-            <option value="Gents">Gents-ksh1,000</option>
-            <option value="signature">Signature-ksh2,000</option>
-            <option value="jelly">Jelly-ksh2,500</option>
-          </optgroup>
-          <optgroup label="OVERLAY">
-            <option value="naturalbuilder">Natural Builder-ksh1,500</option>
-            <option value="tip+overlay">Tip+Overlay-ksh2,000</option>
-            <option value="extended">Extended-ksh2,500</option>
-          </optgroup>
-    
-          <optgroup label="NAIL EXTENSION">
-            <option value="tipsgelplain">Tips Gel Plain-ksh1,500</option>
-            <option value="acrylic+gel">Acrylic+Gel-ksh3,000</option>
-            <option value="acrylicpowder">Acrylic Powder-ksh3,500</option>
-            <option value="sculpting">Sculpting-ksh4,500</option>
-          </optgroup>
-    
-          <optgroup label="INFILL/REFILL">
-            <option value="Builder">Builder-ksh1,500</option>
-            <option value="acrylic">Acrylic-ksh2,000</option>
-          </optgroup>
-    
-          <optgroup label="TOE NAILS">
-            <option value="toegel">Toe Gel-ksh700</option>
-            <option value="overlaygel">Overlay Gel-ksh1,500</option>
-            <option value="tipsgel">Tips Gel-ksh1,500</option>
-            <option value="acrylicgel">Acrylic Gel-ksh2,000</option>
-            <option value="acrylicpowder">Acrylic Powder-ksh2,000</option>
-          </optgroup>
-    
-          <optgroup label="EYEBROWS">
-            <option value="razor">Razor-ksh200</option>
-            <option value="threading">Threading-ksh300</option>
-          </optgroup>
-    
-          <optgroup label="LASHES">
-            <option value="strip">Strip-ksh700</option>
-            <option value="single">Single-ksh1,500</option>
-          </optgroup>
-          
-          <optgroup label="PIERCINGS">
-            <option value="earlobe">Earlobe-ksh500</option>
-            <option value="nose">Nose-ksh500/1,000</option>
-            <option value="smile">Smile-ksh1,500</option>
-            <option value="tongue">Tongue-ksh2,000</option>
-            <option value="navel">Navel-ksh2,000</option>
-          </optgroup>
-    
-        </select>
-      </div>
-      <div class="mb-3">
-        <label for="date" >Preferred Date:</label><br/>
-        <input type="date" id="date" name="date" class="form-control" required /><br/>
-      </div>
-    <div class="mb-3">
-        <label for="time" > Time:</label><br/>
-        <select id="time" name="time" class="form-control" required>
-          <option value="" disabled selected>Preferred Time</option>
-          <option value="08:00">08:00 AM</option>
-          <option value="09:30">09:30 AM</option>
-          <option value="10:00">10:00 AM</option>
-          <option value="11:30">11:30 AM</option>
-          <option value="12:00">12:00 PM</option>
-          <option value="13:30">1:30 PM</option>
-          <option value="14:00">2:00 PM</option>
-          <option value="15:30">3:30 PM</option>
-          <option value="16:00">4:00 PM</option>
-          <option value="17:30">5:30 PM</option>
-          <option value="18:00">6:00 PM</option>
-          <option value="19:30">7:30 PM</option>
-          <option value="20:00">8:00 PM</option>
-          <option value="21:30">9:30 PM</option>
-         </select>
-      </div>
-      <div class="mb-3">
-        <label for="nailtech" >Your Tech:</label><br/>
-        <select id="nailtech" name="nailtech" class="form-control" required>
-          <option value="" disabled selected>Preferred Tech-HH</option>
-          <option value="No preference">No Preference</option>
-          <option value="nailedbymash">NailedbyMash</option>
-          <option value="nailsbymanesh">nailsbymanesh</option>
-          <option value="rickyclaws">Ricky_klaws</option>
-          <option value="kevnails">Kev_Nails_ </option>
-          <option value="nailsramoes">Nailsramoes</option>
-          <option value="nailsaite">Nails.aite</option>
-          <option value="Realyukie1">Realyukie1</option>
-          <option value=""disabled selected>Preferred Tech-Afya Centre</option>
-          <option value=""disabled selected>Preferred Tech </option>
-          <option value="No Preference">No Preference</option>
-          <option value="luthernails">Luther_nails</option>
-          <option value="kevohnails">Kevoh.nails</option>
-          <option value="davenails">dave.nails7</option>
-          <option value="nailsbywallace">nailsbywallace</option>
-          
-
-        </select>
-      </div>
-      <div class="mb-3">
-        <label for="location">Choose Location:</label><br/>
-        <select id="location" name="location" class="form-control" required>
-          <option value="" disabled selected>Preferred location</option>
-          <option value="hh_towers">HH Tower - 8th floor</option>
-          <option value="afya_center">Around Afya Centre</option>
-        </select>
-      </div>
-
-      <button type="submit" class="btn btn-primary">Submit Booking</button>
-    </form>
-  </section>
-
+        <!-- Website Design & Development -->
+        <div class="col-md-6 col-lg-4" data-aos="fade-up" data-aos-delay="100">
+          <div class="card h-100 shadow-sm border-0">
+            <div class="card-body">
+              <div class="mb-3 text-primary fs-1"><i class="bi bi-display"></i></div>
+              <h5 class="card-title fw-bold">Website Design & Development</h5>
+              <p class="card-text">I craft clean, modern, and fully responsive websites that look stunning on all devices. Whether you need a portfolio, business site, or online store, I build websites that reflect your brand and keep visitors engaged.</p>
+            </div>
+          </div>
+        </div>
   
-  <section id="Contact" class="container py-5 text-center">
-    <h1>Contact Us</h1>
-    <p>Moi Avenue, HH Tower, 8th Floor, Nairobi.</p>
-    <p>Around Afya Center our 2nd location </p>
-    <p>WhatsApp/call|AROUND AFYA CENTER: <a href="tel:+254726738386">+254726738386</a></p>
-    <p>WhatsApp/Call|HH TOWERS: <a href="tel:+254796801811">+254796801811</a></p>
-    <p>WhatsApp/call|HH TOWERS : <a href="tel:+254792979705">+254792979705</a></p>
-  </section>
-
-
-  <section id="Location" class="container py-5 text-center">
-    <h1>Location</h1>
-    <iframe
-    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d15955.3411220628!2d36.8169641!3d-1.2832537!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x182f10efc9dcf079%3A0x847ae89d2cf5190d!2sH.H.%20Towers!5e0!3m2!1sen!2ske!4v1716401146532!5m2!1sen!2ske"
-    width="100%" height="300" style="border:0;" allowfullscreen="" loading="lazy"
-  ></iframe>
-  </section>
-
+        <!-- Backend Development -->
+        <div class="col-md-6 col-lg-4" data-aos="fade-up" data-aos-delay="200">
+          <div class="card h-100 shadow-sm border-0">
+            <div class="card-body">
+              <div class="mb-3 text-primary fs-1"><i class="bi bi-hdd-network"></i></div>
+              <h5 class="card-title fw-bold">Backend Development</h5>
+              <p class="card-text">I build scalable, secure, and efficient backend systems using technologies like Node.js and MongoDB. From databases to server-side logic, I ensure your website runs smoothly for every user.</p>
+            </div>
+          </div>
+        </div>
   
+        <!-- E-Commerce Solutions -->
+        <div class="col-md-6 col-lg-4" data-aos="fade-up" data-aos-delay="300">
+          <div class="card h-100 shadow-sm border-0">
+            <div class="card-body">
+              <div class="mb-3 text-primary fs-1"><i class="bi bi-bag-check"></i></div>
+              <h5 class="card-title fw-bold">E-Commerce Solutions</h5>
+              <p class="card-text">Ready to sell online? I build secure and easy-to-manage online stores with integrated payments like M-Pesa and card options—optimized for conversions and customer experience.</p>
+            </div>
+          </div>
+        </div>
+  
+        <!-- SEO -->
+        <div class="col-md-6 col-lg-4" data-aos="fade-up" data-aos-delay="400">
+          <div class="card h-100 shadow-sm border-0">
+            <div class="card-body">
+              <div class="mb-3 text-primary fs-1"><i class="bi bi-graph-up-arrow"></i></div>
+              <h5 class="card-title fw-bold">Search Engine Optimization (SEO)</h5>
+              <p class="card-text">I apply SEO best practices to improve your site's visibility on search engines. From keyword optimization to lightning-fast performance, I help bring more eyes to your business.</p>
+            </div>
+          </div>
+        </div>
+  
+        <!-- Maintenance -->
+        <div class="col-md-6 col-lg-4" data-aos="fade-up" data-aos-delay="500">
+          <div class="card h-100 shadow-sm border-0">
+            <div class="card-body">
+              <div class="mb-3 text-primary fs-1"><i class="bi bi-tools"></i></div>
+              <h5 class="card-title fw-bold">Website Maintenance & Updates</h5>
+              <p class="card-text">I offer ongoing support and maintenance to keep your site secure, fast, and up-to-date. Focus on your business while I handle everything behind the scenes.</p>
+            </div>
+          </div>
+        </div>
+  
+        <!-- Mobile-First Development -->
+        <div class="col-md-6 col-lg-4" data-aos="fade-up" data-aos-delay="600">
+          <div class="card h-100 shadow-sm border-0">
+            <div class="card-body">
+              <div class="mb-3 text-primary fs-1"><i class="bi bi-phone"></i></div>
+              <h5 class="card-title fw-bold">Mobile-First Development</h5>
+              <p class="card-text">I design websites with a mobile-first approach so they look and perform great on smartphones and tablets. Your users get a seamless experience—anytime, anywhere.</p>
+            </div>
+          </div>
+        </div>
+  
+      </div>
+    </div>
+  </section>
+
+  <!--My Work Section-->
+  <section id="my-work" class="py-5 bg-light">
+    <div class="container">
+        <h2 class="text-center mb-5" data-aos="fade-up">My Work</h2>
+        <div class="work-text text-center"  data-aos="fade-up" data-aos-delay="150"></div>
+       <p> This collection highlights a range of digital projects delivered, combining thoughtful design, strong functionality, and solutions tailored to real business needs.
+       </p> 
+    </div>
+        <div class="row">
+            <!--Project Card -->
+            <div class="col-md-6 col-lg-4" data-aos="fade-up" data-aos-delay="300">
+                <div class="card h-100 shadow">
+                    <img src="trendysnapp.jpeg"   class="img-fluid" class="card-img-top" alt="Trendy Nails Spot Website">
+                    <div class="card-body">
+                        <h5 class="card-title">Trendy Nails Spot Website</h5>
+                        <p class="card-text">
+                        A modern, responsive booking website  built to help clients easily explore services, choose locations, and book nail appointments online. It features a clean design, automated bookings, and a smooth user experience across all devices.
+                        <a href="https://trendynailsspot.co.ke" target="_blank" class="btn btn-primary">Visit Site</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-4" data-aos="fade-up" data-aos-delay="300">
+              <div class="card h-shadow">
+                <img src="mwuapsnap.jpeg" class="img-fluid" class="card-img-top" alt="Mzizi Arts Production">
+                <div class="card-body">
+                  <h5 class="card-title">Mzizi Arts Production</h5>
+                  <p class="card-text">
+                  Thearter Art Production Company that is visually engaging platform  created to showcase creative work, highlight services, and present the brand professionally online. It focuses on strong visuals, smooth animations, and clear content to attract and convert clients.
+                  </p>
+                  <a href="https://v-allary.github.io/Mzizii-Arts-Production/" target="_blank" class="btn btn-primary">Visit Site</a>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-6 col-lg-4" data-aos="fade-up" data-aos-delay="300">
+                <div class="card h-100 shadow">
+                    <img src="Screenshot .jpeg"   class="img-fluid" class="card-img-top" alt="Golden Hands Demo Website">
+                    <div class="card-body">
+                        <h5 class="card-title">Golden Hands Spa Demo Website</h5>
+                        <p class="card-text">
+                            A  a premium, elegant platform I designed to showcase spa services, support online bookings, and deliver a calm, luxurious user experience across all devices.
+                        </p>
+                        <a href="https://v-allary.github.io/Golden-Hands-Spa-Demo/" target="_blank" class="btn btn-primary">Visit Site</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-4" data-aos="fade-up" data-aos-delay="300">
+              <div class="card h-100 shadow">
+                <img src="Tanchi Screenshot .1.jpeg" class="img-fluid" class="card-img-top" alt="Tanchi Nails Demo">
+                <div class="card-body">
+                  <h5 class="card-tittle">Tanchi Nails Demo Website</h5>
+                  <p class="card-text">
+                    A Full project for Tanchi Nails Demo Website with a Booking section,work presentaion and accurate location.
+                  </p>
+                  <a href="https://v-allary.github.io/TANCHINAILS/" target="_blank" class="btn btn-primary">Visit Site</a>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-6 col-lg-4" data-aos="fade-up" data-aos-delay="300">
+              <div class="card h-100 shadow">
+                <img src="Screenshot  2.jpeg"  class="img-fluid" class="card-img-top" alt="Glow Beauty Spa Demo">
+                <div class="card-body">
+                  <h5 class="card-title">Glow Beauty Spa Demo Website</h5>
+                  <p class="card-text">
+                    Also a full project with a simple booking section for Glow Beauty Spa Demo Website account.
+                  </p>
+                  <a href="https://v-allary.github.io/TANCHINAILS/" target="_blank" class="btn btn-primary">Visit Site</a>
+                </div>
+              </div>
+            </div>
+    </div>
+  </section>
+
+
+  <!-- Contact Section -->
+  <section id="contact" class="py-5">
+    <div class="container">
+      <h2 class="text-center" data-aos="fade-up">Contact Me</h2>
+      <form method="POST" action="https://vmdigital.co.ke/submit-form" data-aos="fade-up">
+        <div class="mb-3">
+          <input type="text" name="name" placeholder="Your Name" class="form-control" required />
+        </div>
+        <div class="mb-3">
+          <input type="email" name="email" placeholder="Your Email" class="form-control" required />
+        </div>
+        <div class="mb-3">
+          <textarea name="message" placeholder="Your Message" class="form-control" rows="5" required></textarea>
+        </div>
+        <button type="submit" class="btn btn-dark">Send Message</button>
+      </form>
+    </div>
+  </section>
+
   <footer class="bg-dark text-white text-center py-3">
-    <p>&copy; 2018 Trendy_Nailsspot. All rights reserved.</p>
+    <p>© 2025 Vallary Mitchelle. All rights reserved.</p>
   </footer>
 
   <script src="main.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script> 
-  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap-select@1.14.0-beta3/dist/js/bootstrap-select.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.13/js/intlTelInput.min.js"></script>
-
-  
+  <script src="https://unpkg.com/aos@next/dist/aos.js"></script>
   <script>
-    $('#service').on('shown.bs.select', function () {
-      if (!$('.bs-done-button').length) {
-        // Add Done button inside dropdown once
-        $('.dropdown-menu.inner').after(
-          '<div class="text-center p-2 bs-done-button">' +
-            '<button type="button" class="btn btn-sm btn-outline-secondary">Done</button>' +
-          '</div>'
-        );
-  
-        // Close dropdown when Done is clicked
-        $('.bs-done-button button').on('click', function () {
-          $('#service').selectpicker('toggle');
-        });
-      }
-    });
+    AOS.init();
   </script>
 </body>
 </html>
