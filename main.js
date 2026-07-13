@@ -39,7 +39,7 @@ document.addEventListener('DOMContentLoaded', () => {
         console.log(data);
 
         try {
-            const response = await fetch('https://trendynailsspot-u408.onrender.com/submit-form', {
+            const response = await fetch('/submit-form', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
